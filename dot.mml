@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+ <semantics>
+  <mrow>
+   <mi mathvariant="italic">cosθ</mi>
+   <mo stretchy="false">=</mo>
+   <mfrac>
+    <mrow>
+     <mi>a</mi>
+     <mo stretchy="false">⋅</mo>
+     <mi>b</mi>
+    </mrow>
+    <mrow>
+     <mrow>
+      <mo fence="true" stretchy="false">|</mo>
+      <mrow>
+       <mi>a</mi>
+      </mrow>
+      <mo fence="true" stretchy="false">|</mo>
+     </mrow>
+     <mrow>
+      <mo fence="true" stretchy="false">|</mo>
+      <mrow>
+       <mi>b</mi>
+      </mrow>
+      <mo fence="true" stretchy="false">|</mo>
+     </mrow>
+    </mrow>
+   </mfrac>
+   <mo stretchy="false">=</mo>
+   <mfrac>
+    <mrow>
+     <msub>
+      <mi>a</mi>
+      <mi>x</mi>
+     </msub>
+     <mrow>
+      <msub>
+       <mi>b</mi>
+       <mi>x</mi>
+      </msub>
+      <mo stretchy="false">+</mo>
+      <msub>
+       <mi>a</mi>
+       <mi>y</mi>
+      </msub>
+     </mrow>
+     <mrow>
+      <msub>
+       <mi>b</mi>
+       <mi>y</mi>
+      </msub>
+      <mo stretchy="false">+</mo>
+      <msub>
+       <mi>a</mi>
+       <mi>z</mi>
+      </msub>
+     </mrow>
+     <msub>
+      <mi>b</mi>
+      <mi>z</mi>
+     </msub>
+    </mrow>
+    <msqrt>
+     <mrow>
+      <mrow>
+       <mo fence="true" stretchy="false">(</mo>
+       <mrow>
+        <mrow>
+         <msubsup>
+          <mi>a</mi>
+          <mi>x</mi>
+          <mn>2</mn>
+         </msubsup>
+         <mo stretchy="false">+</mo>
+         <msubsup>
+          <mi>a</mi>
+          <mi>y</mi>
+          <mn>2</mn>
+         </msubsup>
+         <mo stretchy="false">+</mo>
+         <msubsup>
+          <mi>a</mi>
+          <mi>z</mi>
+          <mn>2</mn>
+         </msubsup>
+        </mrow>
+       </mrow>
+       <mo fence="true" stretchy="false">)</mo>
+      </mrow>
+      <mrow>
+       <mo fence="true" stretchy="false">(</mo>
+       <mrow>
+        <mrow>
+         <msubsup>
+          <mi>b</mi>
+          <mi>x</mi>
+          <mn>2</mn>
+         </msubsup>
+         <mo stretchy="false">+</mo>
+         <msubsup>
+          <mi>b</mi>
+          <mi>y</mi>
+          <mn>2</mn>
+         </msubsup>
+         <mo stretchy="false">+</mo>
+         <msubsup>
+          <mi>b</mi>
+          <mi>z</mi>
+          <mn>2</mn>
+         </msubsup>
+        </mrow>
+       </mrow>
+       <mo fence="true" stretchy="false">)</mo>
+      </mrow>
+     </mrow>
+    </msqrt>
+   </mfrac>
+  </mrow>
+  <annotation encoding="StarMath 5.0">
+cosθ = {a cdot b} over { lline a rline lline b rline}
+
+=  {a_x b_x + a_y b_y + a_z b_z} over sqrt{(a_x^2+a_y^2+a_z^2)(b_x^2+b_y^2+b_z^2)}</annotation>
+ </semantics>
+</math>

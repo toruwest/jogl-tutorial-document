@@ -1,0 +1,4426 @@
+<!DOCTYPE html>
+    <html  lang="ja">
+      <head>
+        <meta  content="text/html; charset=UTF-8"  http-equiv="content-type">
+        <meta  http-equiv="Content-Style-Type"  content="text/css">
+        <link  rel="stylesheet"  type="text/css"  href="opengl.css">
+        <title>JOGLによるOpenGL入門</title>
+      </head>
+      <body>
+        <h1  class="title">JOGLによるOpenGL入門</h1>
+        <p>この文書は,JOGLを用いたOpenGLのチュートリアルです。日本のOpenGL界隈では有名な、和歌山大学の床井先生の「<a  href="http://www.wakayama-u.ac.jp/%7Etokoi/opengl/libglut.html">OpenGL
+            による「手抜き」OpenGL入門</a>」を基にしています。末尾の条件に従い自由に再配布・改変してくださっても構いません。</p>
+        <p>なお、この文書の公開を快諾してくださった床井先生に感謝いたします。</p>
+        <p  class="revision"  align="right">&nbsp; 初版 2015/11/12</p>
+        <p  class="revision"  align="right">更新 2015/11/12</p>
+        <h3>目次</h3>
+        <div><a  href="#C1">1.はじめに</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S1.1">1.1 想定している読者</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S1.2">1.2 なぜJOGLか</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S1.3">1.3 JOGL以外の選択肢</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S1.4">1.4 UIフレームワーク</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S1.5">1.5 OpenGLのバージョン</a></div>
+        <div><a  href="#C2">2.JOGLのインストール</a></div>
+        <div><a  href="#C3">3.コーディング</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S3.1">3.1 パッケージ名変更について</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S3.2">3.2 JOGLの設定</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S3.3">3.3 空のウィンドウを開く</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S3.4">3.4 ウィンドウを塗りつぶす</a></div>
+        <div><a  href="#C4">4.二次元図形を描く</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S4.1">4.1 線を引く</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S4.2">4.2 図形のタイプ</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S4.3">4.3 さまざまな点と線を描いてみる</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S4.4">4.4 線に色を付ける</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S4.5">4.5 図形を塗りつぶす</a></div>
+        <div><a  href="#C5">5.座標系とマウス・キーボードによる操作</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S5.1">5.1 座標軸とビューポート</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S5.2">5.2 マウスボタンのクリックと、マウスイベント</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S5.3">5.3 モデリング座標とビューイング座標について</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S5.4">5.4 座標変換について</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S5.5">5.5 マウスのドラッグ</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S5.6">5.6 マウスホイールの操作</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S5.7">5.7 キーボードの操作</a></div>
+        <div><a  href="#C6">6.三次元図形を描く</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S6.1">6.1 二次元と三次元</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S6.2">6.2 線画を表示する</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S6.3">6.3 透視投影する</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S6.4">6.4 視点の位置を変更する</a></div>
+        <div><a  href="#C7">7.アニメーション</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S7.1">7.1 図形を動かす</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S7.2">7.2 ダブルバッファリング</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S7.3">7.3 Animoatorとスレッドについて</a></div>
+        <div><a  href="#C8">8.隠面消去処理</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S8.1">8.1 多面体を塗りつぶす</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S8.2">8.2 デプスバッファを使う</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S8.3">8.3 カリング</a></div>
+        <div><a  href="#C9">9.陰影付け</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S9.1">9.1 光を当ててみる</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S9.2">9.2 光源を設定する</a></div>
+        <div>&nbsp;&nbsp;<a  href="#S9.3">9.3 材質を設定する</a></div>
+        <div><a  href="#C10">10.階層構造</a></div>
+        <div><a  href="#C11">11.テクスチャ</a></div>
+        <div><a  href="#C12">12.GLUTに定義済みの図形</a></div>
+        <div><a  href="#C13">13.OpenGLのプロファイル</a></div>
+        <div><a  href="#C14">14.デバッグ</a></div>
+        <div><a  href="#C15">15.サンプルコード</a></div>
+        <div><a  href="#Reference">16. リファレンス</a></div>
+        <div><a  href="#Licence">17.ライセンス</a></div>
+        <hr>
+        <h2><a  class="label"  id="C1">1.はじめに</a></h2>
+        <h3><a  class="label"  id="S1.1">1.1想定している読者</a></h3>
+        <p>この文書では、Javaの基本は理解されている読者が、JOGLを使いたい場合に参考にしていただくことを目的として描かれています。また、C,
+          C++などの言語でOpenGLを使った経験はあるが、JOGLを使いたい方にも参考となることを目指しています。</p>
+        <p>筆者は主にOSX(Marvericks)を用いて動作確認しています。</p>
+        <h3><a  class="label"  id="S1.2">1.2なぜJOGLか</a></h3>
+        <p>床井先生の「OpenGL手抜き入門」には、以下のような一文があります。</p>
+        <pre  class="source">OpenGLとGLUTを組み合わせれば、
+(1)UNIX系OS(Linux、FreeBSD等を含む)とWindowsとMacのいずれでも動く、<br>
+(2)リアルタイムに三次元表示を行うプログラムが、<br>
+(3)とっても簡単に書けてしまう、<br>
+という三拍子そろったメリットが得られます。</pre>
+<p>これについては、"Write once、run anywhere"がウリのJavaであり、JOGLももちろん複数のプラットフォームで使えるようになっています。<br>
+プラットフォームとしては、Windows/OSX/Unix系だけでなく、Android用のサンプルがAPKファイルの形で提供されていることから、Androidを採用したスマホやタブレットでも使えるようです。なお、iPhone/iPadについては、現時点では不明です。</p>
+
+<h3><a  class="label"  id="S1.3">1.3 JOGL以外の選択肢</a></h3>
+<p>現時点では、Java系では<a  href="https://processing.org/">Processing</a>、<a  href="http://www.lwjgl.org/">LWJGL</a>がOpenGLをサポートしています。<a
+ href="https://github.com/libgdx/libgdx/">libGDX</a>はOpenGL ESをサポートしています。</p>
+<p>Javaで、OpenGL系列ではない技術となると、１０年ほど前ならJava3Dが唯一の選択肢だったと思います。Java 8からは、JavaFX 3Dが登場しています。<br>
+JavaFXとJOGLの組み合わせが動かせないか、疑問に思われる方もいらっしゃると思いますが、<a  href="https://jogamp.org/bugzilla/show_bug.cgi?id=607">「動くはず」という情報</a>だけは見つかりました。動作確認は行っていません。</p>
+
+<h3><a  class="label"  id="S1.4">1.4 UIフレームワーク</a></h3>
+<p>JavaのUIはAWT、Swing、SWTがあり、JOGLはいずれにも対応しています。JOGLはこれとは別にNEWTと呼ばれる独自のライブラリが用意されています。但し、NEWTはSwingのJFrameやAWTのWindowとは違い、ボタンやテキストフィールドなどを貼り付けるような使い方は想定されていないようです。<br>
+  この文書で解説するのは、主にNEWTとします。</p><p><br></p>
+<h3><a  class="label"  id="S1.5">1.5 OpenGLのバージョン</a></h3>
+        <p>この文書では、OpenGLの固定パイプライン機能を対象としています。残念ながら、最近のOpenGLで使われるGLSLについては対象外です。</p>        
+<h2><a  class="label"  id="C2">2.JOGLのインストール</a></h2>
+<p>(1)Mavenを使う方法</p><p> JOGLは<a  href="http://mvnrepository.com/artifact/org.jogamp.jogl/jogl-all-main">Mavenセントラル・リポジトリ</a>に登録されているので、以下の内容("*"は具体的な数字で置き換えます)をpom.xmlに書いておけば、"mvn install"によりダウンロードされます。<br>
+JavaDocをダウンロードしたい場合、"mvn dependency:resolve -Dclassifier=javadoc"、Javaソースをダウンロードしたい場合、"mvn dependency:resolve -Dclassifier=sources"とします。</p>
+<pre  class="source"><code><dependency>
+    <groupid>org.jogamp.jogl</groupid>
+    <artifactid>jogl-all-main</artifactid>
+    <version>2.*.*</version>
+</dependency>
+</code></pre>
+        
+<p>(2)コンパイル済みバイナリの入手</p><p>JOGLのコンパイル済みのバイナリは<a  href="http://jogamp.org/">http://jogamp.org/</a>から入手できます。Windows用、Linux用、OSX用がすべて一つの圧縮ファイルとして提供されています。</p>
+<p>なお、検索エンジンで探すと<a  href="https://kenai.com/projects/jogl/pages/Home">https://kenai.com/projects/jogl/pages/Home</a>が見つかることがありますが、これは古いです。<br>
+</p><p>先のページの下の、<a  href="http://jogamp.org/wiki/index.php/Jogamp_Versioning_and_Releases">Builds/Downloads</a>の"Current"の右にある"zip"クリックした先のページにある、<a
+ href="http://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z">jogamp-all-platforms.7z</a>に、必要となる全てのJARファイルが含まれています。<br>7z形式のアーカイブファイルを解凍できるソフトが必要となります。Windowsでは<a
+ href="http://sevenzip.sourceforge.jp/">7-zip</a>、OSXでは<a
+ href="http://www.macupdate.com/app/mac/19139/ez7z">Ez7z</a>、Unix系では<a
+ href="http://p7zip.sourceforge.net/">P7ZIP</a>が使えるようです。</p>
+<p>余談ですが、前述の圧縮ファイルには、JOCL(OpenCL関係)、JOAL(サウンド関係)などのJARファイルも同梱されています。<br>これらを適切なフォルダ、あるいはディレクトリに格納してください。なお、このときにディレクトリの構造は解凍した状態から変えないようにします。</p>
+<p>(3)パッケージ管理ツールを使う方法<br>  Ubuntuではlibjogl2-javaというパッケージにより提供されています。Debianでも同様と思われます。RedHat系では未確認です。<br>　OSXでは、HomeBrewには<strong>無い</strong>ことを確認しました。MacPortsでは未確認です。</p>
+<p>(4)ソースからのコンパイル</p><p>　　この文書では対象外としますが、<a  href="http://jogamp.org/jogl/doc/HowToBuild.html">http://jogamp.org/jogl/doc/HowToBuild.html</a>に方法が書かれています。</p>
+<p>(5)JavaDocおよびJavaソースコードの入手</p>
+<p>　　mavenを使う場合(1)項を、それ以外の場合、<a  href="#Reference">リファレンス</a>を見てください。</p>
+
+<h2><a  class="label"  id="C3">3.コーディング</a></h2>
+<h3><a  class="label"  id="S3.1">3.1 パッケージ名変更について</a></h3>
+<p>バージョン2.3より、JOGL関連クラスのパッケージ名が以下のとおり変わったようです。従って、既存のソースを、2.3以降でコンパイルする場合には、以下のように修正する必要があります。</p>
+<table>
+	<tbody><tr><td>javax.media.opengl.*</td><td>→</td><td>com.jogamp.opengl.*</td></tr>
+    <tr><td>javax.media.nativewindow.*</td><td>→</td><td>com.jogamp.nativewindow.*</td></tr>
+</tbody></table>
+<p>なお、Unix系のOS(OSXも含む)では以下のスクリプトにより、サブフォルダー内のソースを一括して変えられるはずです。Windowsでの方法は未調査です、すいません。<br>
+注意：このスクリプトのバグによりソースが失われる可能性もありますので、きちんとバックアップを取ってから実行してください。<br>
+このスクリプトの、'-i ".bak"'というパラメーターにより、"*.java.bak"というファイル名でバックアップを作成しますが、バックアップが不要なら削除してください。</p>
+<pre  class="source"><code>
+grep -lr 'javax\.media\.opengl' --include="*.java" * | xargs sed -i ".bak" -e 's/javax\.media\.opengl/com\.jogamp\.opengl/g'
+</code></pre>
+
+<h3><a  class="label"  id="S3.2">3.2JOGLの設定</a></h3>
+<p>jogl-all.jarとgluegen-rt.jarの２つのファイルを、クラスパスに設定します。</p>
+<p>jogl-all.jarは、全てのクラスファイルを含むので、これさえ使っていれば必要なクラスが見つからないといったことにはならないのですが、各プラットフォームや、使いたいUI(AWT、Swing、NEWT)に応じて別のJARファイルも用意されているので、これらを使えば、プロジェクト全体を配布する場合に、ファイルサイズが小さくなる可能性があります。<br>
+また、実行時にはプラットフォーム依存のネイティブ・ライブラリも必要となるのですが、JOGLには実行環境を調査して、<a  href="http://jogamp.org/jogl/doc/userguide/#automatednativelibraryloading">必要なネイティブ・ライブラリを自動的にロードする仕組みが備わっている</a>ので、先ほどのJARファイルをクラスパスに設定しておけば、環境変数PATHや、LD_LIBRARY_PATH、Eclipseでのネイティブ・ライブラリの場所などを設定する必要はありません。 この仕組みは、ディレクトリ構成がアーカイブファイルを解凍したときのままであることが前提条件のようですので、アーカイブファイルを解凍したらディレクトリ構成を変えないようにします。</p>
+<p>また、JDK/JREのextフォルダーにJOGL,GLUEGENのJARファイルを置くのは厳禁です。</p>
+
+<h3><a  class="label"  id="S3.3">3.3空のウィンドウを開く</a></h3>
+
+<p>いよいよプログラムの作成に入ります。ウィンドウを開くだけのプログラムは、JOGL+NEWTを使うとこんな風になります。このソースプログラムをFirstStepNewt.javaというファイル名で作成し、実行してみてください。</p>
+<pre  class="source"><code>
+package demos.basic;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.Animator;
+
+public class FirstStepNewt implements GLEventListener { //(1)
+	
+	public static void main(String[] args) {
+		new FirstStepNewt();
+	}
+	
+	public FirstStepNewt() {
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));//(2)
+		GLWindow glWindow = GLWindow.create(caps); //(3)
+		glWindow.setTitle("First demo (Newt)"); //(4)
+		glWindow.setSize(300, 300); //(5)
+		
+		glWindow.addWindowListener(new WindowAdapter() { //(6)
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				System.exit(0);
+			}
+		});
+		glWindow.addGLEventListener(this); //(7)
+		
+		Animator animator = new Animator(); //(8)
+		animator.add(glWindow);
+		animator.start();
+		glWindow.setVisible(true); //(10)
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+}
+</code></pre>
+<p>以下のような真っ黒なウィンドウが表示されます。<br><img  alt="FirstStepNewt.javaの実行結果"  src="FirstStepNewt.png"
+ height="436"
+ width="414"><br>
+今度は、同じことをSwingを使ってやってみます。<br>このソースプログラムをFirstStepSwing.javaというファイル名で作成し、実行してみてください。</p>
+<pre  class="source"><code>
+package demos.basic;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.awt.GLCanvas;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
+public class FirstStepSwing implements GLEventListener { //(1)
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				new FirstStepSwing();
+			}
+		});
+	}
+	
+	public FirstStepSwing() {
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2)); //(2)
+		JFrame frame = new JFrame(); //(3)
+		frame.setTitle("First demo (Swing)"); //(4)
+		
+		frame.addWindowListener(new WindowAdapter() { //(6)
+			@Override
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
+			}
+		});
+		
+		GLCanvas canvas = new GLCanvas(caps);
+		canvas.setPreferredSize(new Dimension(300, 300)); //(5)
+		
+		canvas.addGLEventListener(this); //(7)
+		
+		frame.add(canvas, BorderLayout.CENTER);
+		frame.setLocation(300, 300); //(9)
+		frame.pack();
+		frame.setVisible(true); //(10)
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+}
+</code></pre>
+<p>これも同じように以下のような真っ黒なウィンドウが表示されます。<br><img  alt="FirstStepSwing.javaの実行結果"  src="FirstStepSwing.png"
+ height="436"
+ width="414"><br>FirstStepSwing.javaについて、以下のように、GLCanvasの代わりにGLJPanelを使っても、同様に真っ暗なスクリーンになります。</p>
+<pre  class="source"><code>import com.jogamp.opengl.awt.GLJPanel;
+//GLCanvas canvas = new GLCanvas(caps); コメントアウト
+GLJPanel canvas = new GLJPanel(caps);　
+</code></pre>
+<p>GLCanvas、GLJPanelの使い分けは、<a  href="http://forum.jogamp.org/question-about-the-GLCanvas-and-GLJPanel-td3844025.html">jogampフォーラム</a>によると、特に問題ない限りGLCanvasを使い(こちらの方が高速)、以下のような状況で何かトラブルが起きた場合はGLJPanelを使おうということのようです。</p>
+<ul><li>JInternalFrameを使う。</li></ul><ul><li>JOGLとJava2Dが同じJFrame上に混在している。</li></ul>
+<p>この文書では、GLCanvasを使うことにします。<br>ソースコードについて順を追って解説していきます。まず、FirstStepNewt.java、FirstStepSwing.javaのどちらにも、(1)の行にGLEventListenerというインターフェースが書かれています。これは以下のようなシグネチャとなっています。JOGLを使うプログラマはこれを実装することにより、JOGLのパワーを引き出すことが出来るという訳です。<br>
+なお、C言語上のGLUTでは、</p>
+<pre  class="source"><code>int main(int argc, char *argv[]) {
+	glutInit(&argc, argv);
+	glutCreateWindow(argv[0]);
+	glutDisplayFunc(display);
+	glutMainLoop();
+	return 0;
+}
+</code></pre>
+<p>の"glutDisplayFunc(display);"のように、関数名はプログラマが自分で決めて使いますが、JOGLの場合、メソッド名は以下のように定義されているものを使うことになります。</p>
+<pre  class="source"><code>
+public void init(GLAutoDrawable drawable);
+public void reshape(GLAutoDrawable drawable、int x,int y, int width, int height);
+public void display(GLAutoDrawable drawable);
+public void dispose(GLAutoDrawable drawable);
+</code></pre>
+<p>いずれのメソッドでも、引数に、GLAutoDrawableクラスのインスタンスであるdrawableが渡されています。これについては<a  href="#S3.4">3.4節で</a>説明します。</p>
+<p>init()は、OpenGLコンテキストの起動時に呼ばれますので、プログラマはここで一度しか行う必要のない初期化処理を記述します。注意すべきことは、下位のOpenGLコンテキストが破棄・再生成された場合にも呼ばれるため、２回以上呼ばれることがあるということです。(筆者も一度だけ経験したことがあり、一度だけしか呼ばれないはずと不思議に思っていましたが、今回の執筆にあたりJavadocを再確認したところ、このように書かれていましたので、納得しました)</p>
+<p>dispose()は、OpenGLコンテキストが破棄された時に呼ばれますので、プログラマはここでリソースの解放などの処理を行います。こちらもinit()と同様、OpenGLコンテキストが破棄された場合に呼ばれますので、２回以上呼ばれることがあります。</p>
+<p>reshape()は、アプリのウィンドウサイズが変更された場合に呼ばれます。プログラマは、必要に応じて、後述の<a  href="#S5.3">ビューポート</a>や<a
+ href="#S6.3">視錐台</a>を更新します。</p>
+<p>display()は、最も頻繁に呼ばれるメソッドです。プログラマは、ここで各種のプリミティブ(後述)に色を付けて描画したりします。ゲームなどの動きのあるアプリケーションでは、スクリーン上に見えるキャラクターが滑らかに移動しているように見せかけるため、適切に処理する必要があります。</p>
+<p>次に(2)の</p><pre  class="source"><code>GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2)); //(2)
+</code></pre><p>については<a  href="#C14">14章</a>で解説します。</p>
+<p>(3)から(6)についてまとめて説明します。NEWT版は</p><pre  class="source"><code>GLWindow glWindow = GLWindow.create(caps); //(3)
+glWindow.setTitle("First demo (Newt)"); //(4)
+glWindow.setSize(300、300); //(5)
+glWindow.addWindowListener(new WindowAdapter() { //(6)
+	@Override
+	public void windowDestroyed(WindowEvent evt) {
+		System.exit(0);
+	}
+});
+glWindow.addGLEventListener(this); //(7)
+Animator animator = new Animator(); //(8)
+animator.add(glWindow);
+animator.start();
+glWindow.setPosition(500, 500); //(9)
+glWindow.setVisible(true); //(10)
+</code></pre><p>のとおり、Swing版は、</p><pre  class="source"><code>JFrame frame = new JFrame(); //(3)
+frame.setTitle("First demo (Swing)"); //(4)
+frame.addWindowListener(new WindowAdapter() { //(6)
+	@Override
+	public void windowClosing(WindowEvent e) {
+		System.exit(0);
+	}
+});
+GLCanvas canvas = new GLCanvas(caps);
+canvas.setPreferredSize(new Dimension(300, 300)); //(5)
+canvas.addGLEventListener(this); //(7)
+frame.add(canvas、BorderLayout.CENTER);
+frame.setLocation(500, 500); //(9)
+frame.pack();
+frame.setVisible(true);//(10)
+</code></pre>
+<p>となっています。NEWT版では、Swing版とほぼ一対一に対応していることがわかると思います。NEWT版とSwing版を比較してみると、NEWT版ではGLWindowがSwing版のJFrameとGLCanvasを兼ねたような役割を果たしていることがわかります。<br>Swingについては他にも良い解説がたくさんありますので、説明は割愛して、NEWTで使われるGLWindowクラスについて説明します。</p>
+<p>(3)ではGLWindowのインスタンスを作成しています。(4)でタイトルバー上のタイトルを設定、(5)でウィンドウのサイズを設定、(6)でタイトルバー上のクローズアイコンをクリックした時にアプリケーションを終了するように定義しています。(9)でウィンドウの位置を設定し、(10)でウィンドウが見える状態に設定します。<br>(7)がJOGLアプリを作成する上で重要で、どのクラスがJOGLからのイベントを受け取るのかを定義しています。ここでは、FirstStepNewtクラスとFirstStepSwingクラス自身が処理するように定義しています。今のところ、これらのメソッドは何もしていないため、ウィンドウは真っ黒になるということです。<br>(8)はNEWT版だけにあります。(Animatorの解説は<a
+ href="#S7.1">後</a>で行います)</p>
+<pre  class="source"><code>Animator animator = new Animator(); //(8)
+animator.add(glWindow);
+animator.start();
+</code></pre>
+<p>これがないとどうなるか、コメントアウトして試してみてください。ウィンドウが数秒間だけ表示され、すぐに終了することがわかります。<br>GLWindowについては、setAlwaysOnTop()で常に最前面に表示、setFullscreen(true)でフルスクリーンを設定できます。<br>この文書の冒頭で書いたとおり、NEWTはSwingのJFrameとは違い、ボタンやテキストフィールドなどを貼り付けるような使い方はできませんので、これらの要素を使いたいならJFrameを、そうでなければNEWTを採用するのも一つの方法です。もちろんコントロールなしでもJFrameを使うという選択もありだと思います。</p>
+<p>以降ではSwing版の解説は割愛し、NEWT版についてだけ書くことにします。</p>
+
+<h3><a  class="label"  id="S3.4">3.4ウィンドウを塗りつぶす</a></h3>
+
+<p>今まではdisplay()メソッドの中に何も記述していなかったので、真っ黒なウィンドウが表示されていました。そこで、今度は開いたウィンドウを塗りつぶしてみます。<br>FirstStepNewt.javaに以下の<em>太字</em>のところを追加し、もう一度プログラムを実行してみてください。</p>
+<pre  class="source"><code>
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+//(省略)
+public class FirstStepNewt implements GLEventListener { //(1)
+	
+	public static void main(String[] args) {
+		new FirstStepNewt();
+	}
+	
+	public FirstStepNewt() {
+		//変更なし
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		<em>GL2 gl = drawable.getGL().getGL2();//追加
+		//ウィンドウを青く塗りつぶす
+		gl.glClearColor(0.0f, 0.0f, 1.0f, 1.0f);//追加</em>
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		<em>GL2 gl = drawable.getGL().getGL2();//追加
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);//追加</em> 
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {}
+}
+</code></pre>
+<p>これを実行すると、以下のようなウィンドウが表示されます。<br><img  alt=""  src="FirstStepNewt-blue.png"  height="436"
+ width="414"><br> まず、init()メソッドでは以下を行っています。これは、display()メソッドでも同じです。</p><pre
+ class="source"><code><em>GL2 gl = drawable.getGL().getGL2();</em>
+</code></pre>
+<p>これらのメソッドでは、引数として、GLAutoDrawableクラスのインスタンスであるdrawableが渡されています。JOGLでは、init()メソッド、display()メソッドだけでなく、reshape()、dispose()でも、上記のようにしてGLのインスタンスを取得し、このインスタンスのメソッドを呼び出して必要な処理を行っていくことになります。</p>
+<p>getGL().getGL2()のように呼び出しを連鎖しているのは、getGL()で得られるのはGLクラスのインスタンスであり、さらにgetGL2()を呼んで必要な<strong>GL2</strong>クラスのインスタンスを取得します。<br><br>OpenGLは、バージョンによって使える機能に違いがあり、JOGLではこの機能の相違を明確にするため、クラスを分けて定義しているようです。詳細は<a
+ href="#C13">13章のProfile</a>で説明します。<br>
+以下のクラスが定義されています。</p><ul><li>GL</li><li>GL2</li><li>GL3</li><li>GL4</li></ul>
+<p>なお、これ以外にも、OpenGLESの機能を反映したGL2ES2などのクラスがありますが、この文書での説明は割愛します。</p>
+<p>init()メソッド内では、続いて以下のメソッドを呼びます。</p><pre  class="source"><code><em>gl.glClearColor(0.0f, 0.0f, 1.0f, 1.0f);</em>
+</code></pre>
+<p>JOGLではこのメソッドの引数はfloat型ですので、"1.0"ではなく"<strong>1f</strong>"あるいは"<strong>1.0f</strong>"とする必要があります（"0.0"や"1.0"ではコンパイルエラーになります。"0"や"1"だけだと大丈夫です)</p>
+<dl><dt><code>void glClearColor(float r, float g, float b, float a)</code></dt><dd>glClear(GL_COLOR_BUFFER_BIT)でウィンドウを塗りつぶす際の色を指定します。r、g、bはそれぞれ赤、緑、青色の成分の強さを示すfloat型の値で、0から1.0までの値を持ちます。1が最も明るく、この三つに(0f、0f、0f)を指定すれば黒色、(1f、1f、1f)を指定すれば白色になります。上の例ではウィンドウは<span
+ class="blue">青色</span>で塗りつぶされます。最後のAはα値と呼ばれ、OpenGLでは不透明度として扱われます(0で透明、1.0fで不透明)。ここではとりあえず1.0fにしておいてください。 </dd></dl>
+<p>display()内ではGL2インスタンスを取得した後、以下を行っています。<br>glClearColor()は、プログラムの実行中に背景色を変更することがなければ、最初に一度だけ設定すれば十分です。そこでこのような初期化処理は、init()内でまとめて行います。</p><pre
+ class="source"><code><em>gl.glClear(GL.GL_COLOR_BUFFER_BIT);</em>
+</code></pre>
+<dl><dt><a  class="label"  id="glClear">void glClear(int mask)</a></dt><dd>
+ウィンドウを塗りつぶします。maskには塗りつぶすバッファを指定します。OpenGLが管理する画面上のバッファ(メモリ)には、色を格納するカラーバッファの他、隠面消去処理に使うデプスバッファ、凝ったことをするときに使うステンシルバッファ、カラーバッファの上に重ねて表示されるオーバーレイバッファなど、いくつかのものがあり、これらが一つのウィンドウに重なって存在しています。</dd></dl>
+<p>JOGLではGLクラスのスタティック変数としてこれらのマスク値が定義されているので、"GL.GL_COLOR_BUFFER_BIT"のように指定する必要があります。(先頭の"GL"の後の"."に注意)<br>GLクラスをstatic importすれば以下のように"GL"というプレフィックス無しで、GL_COLOR_BUFFER_BITを指定することも可能です。C言語などから移植する場合はこちらの方が便利でしょう。</p><pre
+ class="source"><code><em>import static com.jogamp.opengl.GL.*; //"*"とすると、GLクラスで定義されている全てのstatic定数がインポートされる
+・
+・
+</em><em>gl.glClearBuffer(</em><em>GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | </em><em>GL_STENCIL_BUFFER_BIT);</em> //GLを省略可能
+<em>・</em>
+</code></pre>
+<p>サンプルコードのようにmaskにGL.GL_COLOR_BUFFER_BITを指定したときは、カラーバッファだけが塗りつぶされます。デプスバッファをクリアするにはGL.GL_DEPTH_BUFFER_BITを、ステンシルバッファをクリアするにはGL.GL_STENCIL_BUFFER_BITを指定します。以下のように、これらを'|'でまとめて指定することもできます。</p>
+<pre  class="source"><code><em>gl.glClearBuffer(</em><em>GL.GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | </em><em>GL_STENCIL_BUFFER_BIT);</em>
+</code></pre>
+<dl><dt><br></dt><dt><code>glFlush()</code></dt><dd>glFlush()はまだ実行されていないOpenGLの命令を全部実行します。OpenGLは関数呼び出しによって生成されるOpenGLの命令をその都度実行するのではなく、いくつか溜め込んでおいてまとめて実行します。このため、ある程度命令が溜まらないと関数を呼び出しても実行が開始されない場合があります。glFlush()はそういう状況でまだ実行されていない残りの命令の実行を開始します。ひんぱんにglFlush()を呼び出すと、かえって描画速度が低下します。</dd></dl>
+<!-- p><a href="http://www.java-gaming.org/index.php?topic=1503.0">JOGLではglFlush()は使わない方がいい?</a>SwapBufferと同様に内部で行われている。</p>
+<p>glFlush()のかわりにglFinish()を使う場合もあります.これは、glFlush()がまだ実行されていないOpenGLの命令の実行開始を促すのに加えて、glFinish()はそれがすべて完了するのを待ちます.</p -->
+
+
+<h2><a  class="label"  id="C4">4.二次元図形を描く</a></h2>
+
+
+<h3><a  class="label"  id="S4.1">4.1線を引く</a></h3>
+
+<p>ウィンドウ内に線を引いてみます。プログラムを以下のように変更し、実行してください。</p>
+<pre  class="source"><code>
+<em>import static com.jogamp.opengl.GL2.*;</em>//追加
+public class FirstStepNewt implements GLEventListener { //(1)
+	
+	public static void main(String[] args) {
+		new FirstStepNewt();
+	}
+	
+	public FirstStepNewt() {
+		//変更なし
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		//変更なし
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
+	
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		//以下を追加
+		<strong>gl.glBegin(GL_LINE_LOOP);</strong>
+		<strong>gl.glVertex2f(-0.9f,-0.9f);</strong>
+		<strong>gl.glVertex2f(0.9f, -0.9f);</strong>
+		<strong>gl.glVertex2f(0.9f, 0.9f);</strong>
+		<strong>gl.glVertex2f(-0.9f, 0.9f);</strong>
+		<strong>gl.glEnd();</strong>
+		//ここまでを追加
+	}
+	
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {}
+}
+</code></pre>
+<p>以下のようウィンドウが表示されます。白い線が追加されていますね。<br><img  alt=""  src="FirstStepNewt-line.png"
+ height="436"
+ width="414"></p>
+<dl><dt><code>voidglBegin(int mode)</code></dt><dd>modeには<a  href="#S4.2">4.2節</a>で説明する図形のタイプを指定します。glBegin()とglEnd()の間で使えるメソッドは、glVertex, glColor, glNormal, glTexCoordなどに限定されています。詳しくは<a
+ href="https://www.opengl.org/sdk/docs/man2/xhtml/glBegin.xml">glBeginのリファレンス</a>を参照してください。</dd><dt><code>void glEnd()</code></dt><dd>図形を描くには、glBegin()～glEnd()の間にその図形の各頂点の座標値を設定するメソッドを置きます。</dd><dt><code>void glVertex2f(float x,float y)</code></dt><dd>glVertex2f()は二次元の座標値を設定するのに使います。引数の型はfloatです。引数がdouble型のときは以下のglVertex2d()、int型のときはglVertex2i()を使います。通常は、float型で十分なケースが多いと思います。</dd><dt><code>void glVertex2d(double x,double y)</code></dt><dd>glVertex2d()は引数の型がdoubleであることを除けば、glVertex2f()と同じです。</dd></dl>
+<p>描かれる図形は、(-0.9、-0.9)と(0.9、0.9)の2点を対角線とする正方形です。これがウィンドウに対して「一回り小さく」描かれます.このウィンドウの大きさと図形の大きさの比率は、ウィンドウを拡大縮小しても変化しません。これはウィンドウのx軸とy軸の範囲が、ともに[-1、1]に固定されているからです。</p>
+<div  class="figure"><img  src="resize.gif"  alt="ウィンドウの拡大縮小"  height="172"  width="396"></div>
+
+<h3><a  class="label"  id="S4.2">4.２図形のタイプ</a></h3>
+
+<p>glBegin()の引数modeに指定できる図形のタイプには以下のようなものがあります。詳しくは<a  href="https://www.opengl.org/sdk/docs/man2/xhtml/glBegin.xml">glBeginのリファレンス</a>を参照してください。</p>
+<dl><dt><code>GL_POINTS</code></dt><dd>点を打ちます。</dd><dt><code>GL_LINES</code></dt><dd>2点を対にして、その間を直線で結びます。</dd><dt><code>GL_LINE_STRIP</code></dt><dd>折れ線を描きます。</dd><dt><code>GL_LINE_LOOP</code></dt><dd>折れ線を描きます。始点と終点の間も結ばれます。</dd><dt><code>GL_TRIANGLES/GL_QUADS</code></dt><dd>3/4点を組にして、三角形/四角形を描きます。</dd><dt><code>GL_TRIANGLE_STRIP/GL_QUAD_STRIP</code></dt><dd>一辺を共有しながら帯状に三角形／四角形を描きます。</dd><dt><code>GL_TRIANGLE_FAN</code></dt><dd>一辺を共有しながら扇状に三角形を描きます。</dd><dt><code>GL_POLYGON</code></dt><dd>凸多角形を描きます。</dd></dl>
+<div  class="figure"><img  src="libaux1.gif"  alt="図形プリミティブ一覧"  height="445"  width="511"></div>
+<p>OpenGLを処理するハードウェアは、実際には三角形しか塗り潰すことができません(モノによっては四角形もできるものもあります)。このためGL_POLYGONの場合は、多角形を三角形に分割してから処理します。従って、もし描画速度が重要ならGL_TRIANGLE_STRIPやGL_TRIANGLE_FANを使うようプログラムを工夫してみてください。またGL_QUADSもGL_POLYGONより高速です。</p>
+
+<h3><a  class="label"  id="S4.3">4.3さまざまな点と線を描いてみる</a></h3>
+
+<p>これまでは単純な直線だけを描いてきましたが、さまざまな点や線を描画するにはどうしたらよいでしょうか。ここではまず実行結果を示して、それを描くにはどのようなプログラムにすればいいかを示すことにします。
+<img  alt=""  src="LineAndPointNewt.png"  height="436"  width="514"><br>
+これを表示するためのプログラムは、次のとおりです。</p>
+<pre  class="source"><code>package demos.basic;
+
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.FPSAnimator;
+import static com.jogamp.opengl.GL2.*;
+
+public class LineAndPointNewt1 implements GLEventListener {
+	public static void main(String[] args){
+		new LineAndPointNewt1();
+	}
+	
+	private float[] colors;
+	private final short linePattern = 0b111100011001010; //破線のパターンを定義 (1)
+	
+	public LineAndPointNewt1() {
+		initColors();
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+		GLWindow glWindow = GLWindow.create(caps);
+		glWindow.setTitle("Line and point (Newt)");
+		glWindow.setSize(400, 300);
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				System.exit(0);
+			}
+		});
+		glWindow.addGLEventListener(this);
+		FPSAnimator animator = new FPSAnimator(60);
+		animator.add(glWindow);
+		animator.start();
+		glWindow.setVisible(true);
+	}
+	
+	private void initColors() {
+		colors = new float[8];
+		for(int i = 0; i < 8; i++) {
+			colors[i] = 0.3f + (0.1f * i);
+		}
+	}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		final GL2 gl2 = drawable.getGL().getGL2();
+		gl2.glClear(GL_COLOR_BUFFER_BIT);
+		
+		//大きさを変えて、点を描く。
+		for(int i = 0; i < 8; i++) {
+			gl2.glPointSize((i + 1) * 0.5f); //(2)
+			gl2.glColor3f(1.0f, 1.0f, 1.0f);
+			gl2.glBegin(GL_POINTS); //(3)
+			gl2.glVertex2f(-0.9f, (i-7)*(1.6f/7f) + 0.8f);
+			gl2.glEnd();
+		}
+		
+		//灰色の濃度を変えて、点を描く。
+		for(int i = 0; i < 8; i++) {
+			gl2.glPointSize(2f);
+			gl2.glBegin(GL_POINTS);
+			gl2.glColor3f(colors[i], colors[i], colors[i]);
+			//-0.8から+0.8の範囲になるよう計算
+			gl2.glVertex2f(-0.8f, (i-7)*(1.6f/7f) + 0.8f);
+			gl2.glEnd();
+		}
+		
+		//太さを変えて、線を描く。
+		for(int i = 1; i < 9; i++) {
+			gl2.glLineWidth(i * 0.5f); //(4)
+			gl2.glColor3f(1.0f, 1.0f, 1.0f);
+			gl2.glBegin(GL_LINES);
+			gl2.glVertex2f(-0.6f + i*0.05f, -0.8f);
+			gl2.glVertex2f(-0.6f + i*0.05f, +0.8f);
+			gl2.glEnd();
+		}
+		
+		//灰色の濃度を変えて、線を描く。
+		gl2.glLineWidth(1f);
+		for(int i = 0; i < 8; i++) {
+			gl2.glColor3f(colors[i], colors[i], colors[i]);
+			gl2.glBegin(GL_LINES);
+			gl2.glVertex2f(-0.1f + i*0.05f, -0.8f);
+			gl2.glVertex2f(-0.1f + i*0.05f, +0.8f);
+			gl2.glEnd();
+		}
+		
+		//破線の色と、破線のスケールを変えて、線を描く。
+		gl2.glEnable(GL_LINE_STIPPLE); //破線を描くことを設定 (5)
+		for(int i = 0; i < 8; i++) {
+			gl2.glLineStipple(i+1, linePattern); //(6)
+			gl2.glColor3f(colors[i], colors[i], colors[i]);
+			gl2.glBegin(GL_LINES);
+			gl2.glVertex2f(+0.4f + i*0.05f, -0.8f);
+			gl2.glVertex2f(+0.4f + i*0.05f, +0.8f);
+			gl2.glEnd();
+		}
+		gl2.glDisable(GL_LINE_STIPPLE);//破線を描く設定を解除 (7)
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl2 = drawable.getGL().getGL2();
+		gl2.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) { }
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+}
+</code></pre>
+<p>プログラムについて解説します。(3)で、前項のGL_POINTSを使い、点を描画しますが、このときに(2)で指定した点の大きさが使われます。</p>
+<dl><dt><code>void glPointSize(float size)</code></dt><dd>glPointSize()はこれから描画する点の大きさを指定します。引数の型はfloatです。何も指定しない場合は1.0fです。0を指定すると無視されます。次に別の値を設定するまで、同じ値が使われ続けます。現在設定されている大きさを調べたい場合、例えば以下のようにして調べることができます。</dd></dl>
+<pre  class="source"><code>java.nio.DoubleBuffer glGetBuf = com.jogamp.common.nio.Buffers.newDirectfloatBuffer(bufSize);
+gl2.glGetFloatv(paramType, glGetBuf);
+glGetBuf.rewind();
+System.out.print(paramName + ":");
+for(int i = 0; i < bufSize; i++) {
+	System.out.print(glGetBuf.get(i) + ", ");
+}
+System.out.println();
+</code></pre>
+<p>ここで、glGetFloatv()の引数のparamTypeはGLクラスで定義されているint型の定数です。glGetBufはjava.nio.DoubleBuffer型のインスタンスで、これに結果が格納されます。bufSizeは結果を格納するために必要な要素数であり、これが結果を格納するために必要な値より小さな場合、正常な結果が得られないようです。<br>点の大きさの場合、paramTypeはGL.GL_POINT_SIZEを、bufSizeは1を指定します。<br>paramTypeに指定できる値は、OpenGLの状態に応じた多数の定数があり、ここでは紹介しきれませんので、詳しくは<a
+ href="https://www.opengl.org/sdk/docs/man2/xhtml/glGet.xml">glGet()関数のリファレンス</a>で確認してください。<br>上ではglGetFloatv()を使いましたが、この場合glGetDoublev()でも正常な結果が得られました。他にも、以下のように型に応じたメソッドが用意されています。<br>なお、C/C++言語で用意されているglGetPointerv()は用意されていません。</p>
+<pre  class="source"><code>void glGetBooleanv(int pname, java.nio.BooleanBuffer buf);
+void glGetDoublev(int pname, java.nio.DoubleBuffer buf);
+void glGetFloatv(int pname, java.nio.floatBuffer params);
+void glGetIntegerv(int pname, java.nio.IntBuffer buf);
+</code></pre>
+<p>(4)について</p>
+<dl><dt><code>void glLineWidth(float width)</code></dt><dd>glLineWidth()はこれから描画する線の幅を指定します。引数の型はfloatで、デフォルト(このメソッドを呼ばない)では1.0fとなっています。0を指定すると無視されます。glPointSize()と同様に、次に別の値を設定するまで同じ値が使われ続けます。現在設定されている大きさを調べたい場合、上記のglGetFloatv()にGL.GL_LINE_WIDTHと1を指定して呼び出します。</dd></dl>
+<p>(5)について</p>
+<dl><dt><code><a  class="label"  id="SglEnable">void glEnable(int mode)</a></code></dt><dd>glEnable()はOpenGLの機能を有効化するために使われます。機能を無効にするglDisable(mode)とペアで使われます。modeには定義済みの定数を指定します。これも紹介しきれないほどたくさんの種類がありますので、興味があれば<a
+ href="https://www.opengl.org/sdk/docs/man2/xhtml/glEnable.xml">glEnable()関数のリファレンス</a>をご覧ください。サンプルプログラムでは、gl.glBegin(GL_LINES)で直線を描くときに破線を描くよう、GL_LINE_STIPPLEを指定しています。</dd></dl><p>(7)について</p>
+<dl><dt><code><a  class="label"  id="SglDisable">void glDisable(int mode)</a></code></dt><dd>glEnable()で有効にした機能を無効にするために使われます。サンプルコードでは、GL_LINE_STIPPLEによる破線の設定を無効にしています。</dd></dl>
+<p>(1)と(6)について</p>
+<dl><dt><code>void glLineStipple(int factor、short pattern)</code></dt><dd>glLineStipple()のpatternはこれから描画する破線のパターンを２進数のパターンとして指定します。0は描かれず、1のところだけが線が引かれます。short型ですので16bitのパターンを指定できます。factorは描画する際の拡大率を指定します。どのように描画されるかは、サンプルプログラムの実行結果で確認してください。</dd></dl>
+
+<h3><a  class="label"  id="S4.4">4.4線に色を付ける</a></h3>
+
+<p>線に色を付けてみます。4.1節のサンプルプログラムを以下のように変更し、実行してください。プログラムを実行したら線は何色で表示されたでしょうか?</p>
+<pre  class="source"><code>public class FirstStepNewt implements GLEventListener { //(1)
+	public static void main(String[] args) {
+		new FirstStepNewt();
+	}
+	
+	public FirstStepNewt() {
+		//変更なし
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		//変更なし
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		<strong>gl.glColor3f(1.0f, 0.0f, 0.0f);</strong> //この行を追加。1.0f, 0.0fのように'f'を付けていることに注意。
+		gl.glBegin(GL_LINE_LOOP);
+		gl.glVertex2f(-0.9f,-0.9f);
+		gl.glVertex2f(0.9f, -0.9f);
+		gl.glVertex2f(0.9f, 0.9f);
+		gl.glVertex2f(-0.9f, 0.9f);
+		gl.glEnd();
+	}
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+	}
+}
+</code></pre>
+<p>以下のように線が赤くなりました。<br><img  alt=""  src="FirstStepNewt-redline.png"  height="436"
+ width="414"></p>
+<dl><dt><code><a  class="label"  id="glColor3f">void glColor3f(float r, float g, float b)</a></code></dt><dd>これから描画するものの色をRGBの色空間で指定します。glColor3fはfloat型を引数としますが、引数の型に応じて、以下のメソッドが用意されています。</dd></dl>
+<!-- 検証コード：FirstStepNewtIntColors.java-->
+<table  border="1"><thead>
+	<tr><th>メソッド名と引数</th>
+	<th>値の範囲</th>
+	<th>備考</th>
+	</tr></thead>
+	<tbody>
+	<tr><td>glColor3f(float r, float g, float b)</td><td>0から1.0まで</td><td> </td></tr>
+	<tr><td>glColor3d(double r, double g, double b)</td><td>0から1.0まで</td><td> </td></tr>
+	<tr><td>glColor3b(byte r, byte g, byte b)</td><td>0からByte.MAX_VALUE(127)まで</td><td>負の値は0と見なされる</td></tr>
+	<tr><td>glColor3s(short r, short g, short b)</td><td>0からShort.MAX_VALUE(32767)まで</td><td>負の値は0と見なされる</td></tr>
+	<tr><td>glColor3i(int r, int g, int b)</td><td>0からInteger.MAX_VALUE(2147483647)まで</td><td>負の値は0と見なされる</td></tr>
+	<tr><td>glColor3fv(FloatBuffer buf)</td><td>0から1.0まで</td><td> </td></tr>
+	<tr><td>glColor3dv(DoubleBuffer buf)</td><td>0から1.0まで</td><td> </td></tr>
+	<tr><td>glColor3bv(ByteBuffer buf)</td><td>0からByte.MAX_VALUE(127)まで</td><td>負の値は0と見なされる</td></tr>
+	<tr><td>glColor3sv(ShortBuffer buf)</td><td>0からShort.MAX_VALUE(32767)まで</td><td>負の値は0と見なされる</td></tr>
+	<tr><td>glColor3iv(IntBuffer buf)</td><td>0からInteger.MAX_VALUE(2147483647)まで</td><td>負の値は0と見なされる</td></tr>
+	<tr><td>glColor3fv(float[] array, int index)</td><td>0から1.0まで</td><td> </td></tr>
+	<tr><td>glColor3dv(double[] array, int index)</td><td>0から1.0まで</td><td> </td></tr>
+	<tr><td>glColor3bv(byte[] array, int index)</td><td>0からByte.MAX_VALUE(127)まで</td><td>indexは配列の添え字</td></tr>
+	<tr><td>glColor3sv(short[] array, int index)</td><td>0からShort.MAX_VALUE(32767)まで</td><td>indexは配列の添え字</td></tr>
+	<tr><td>glColor3iv(int[] array, int index)</td><td>0からInteger.MAX_VALUE(2147483647)まで</td><td>indexは配列の添え字</td></tr>	
+	</tbody>
+</table>
+
+<h3><a  class="label"  id="S4.5">4.5図形を塗りつぶす</a></h3>
+
+<p>図形を塗りつぶしてみます。GL_LINE_LOOPをGL_POLYGONに変更しましょう。</p>
+<pre  class="source"><code>
+<em>import static com.jogamp.opengl.GL2.GL_POLYGON;//追加</em>
+//(省略)
+public class FirstStepNewt implements GLEventListener { //(1)
+	
+	public static void main(String[] args) {
+		new FirstStepNewt();
+	}
+	public FirstStepNewt() {
+		//変更なし
+	}
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		//ウィンドウを青く塗りつぶす。
+		gl.glClearColor(0f, 0f, 1.0f, 1.0f);
+	}
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		gl.glColor3f(1.0f, 0.0f, 0.0f);
+		gl.glBegin(<em>GL_POLYGON);</em>//変更
+		gl.glVertex2f(-0.9f,-0.9f);
+		gl.glVertex2f(0.9f, -0.9f);
+		gl.glVertex2f(0.9f, 0.9f);
+		gl.glVertex2f(-0.9f, 0.9f);
+		gl.glEnd();
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {}
+}
+</code></pre>
+<p>このようになりました。<br><img  alt="赤く塗りつぶされた矩形"  src="FirstStepNewt-red-filled.png"  height="436"
+ width="414"></p>
+<p>色は頂点毎に指定することもできます。glBegin()の前のglColor3f()を消して、かわりに四つのglVertex2f()の前にglColor3f()を置きます。サンプルプログラムを以下のように変更してください。プログラムを実行すると、どういう色の付き方になったでしょうか。</p>
+<pre  class="source"><code>@Override
+public void display(GLAutoDrawable drawable) {
+	GL2 gl = drawable.getGL().getGL2();
+	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+	//gl.glColor3f(1.0f, 0.0f, 0.0f); //ここは削除
+	
+	gl.glBegin(GL_POLYGON);
+	<em>gl.glColor3f(1.0f, 0.0f, 0.0f);</em> // 赤
+	gl.glVertex2f(-0.9f,-0.9f);
+	<em>gl.glColor3f(0.0f, 1.0f, 0.0f);</em> // 緑
+	gl.glVertex2f(0.9f, -0.9f);
+	<em>gl.glColor3f(0.0f, 0.0f, 1.0f);</em> // 青
+	gl.glVertex2f(0.9f, 0.9f);
+	<em>gl.glColor3f(1.0f, 1.0f, 0.0f);</em> // 黄
+	gl.glVertex2f(-0.9f, 0.9f);
+	gl.glEnd();
+}
+</code></pre>
+<p>以下のように、多角形の内部は頂点の色から補間した色で塗りつぶされたと思います。<br><img  alt=""  src="FirstStepNewt-varying-color.png"
+ height="436"
+ width="414"></p>
+<p>この段階でのサンプルプログラムは以下のとおりになっているはずです。</p>
+<pre  class="source"><code>package demos.basic;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.FPSAnimator;
+import static com.jogamp.opengl.GL2.*;
+
+public class FirstStepNewt implements GLEventListener {
+	public static void main(String[] args){
+		new FirstStepNewt();
+	}
+	
+	public FirstStepNewt() {
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+		GLWindow glWindow = GLWindow.create(caps);
+		glWindow.setTitle("First demo (Newt)");
+		glWindow.setSize(300, 300);
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				System.exit(0);
+			}
+		});
+		glWindow.addGLEventListener(new FirstStepNewt());
+		FPSAnimator animator = new FPSAnimator(10); //(2)
+		animator.add(glWindow);
+		animator.start();
+		glWindow.setVisible(true);
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		//ウィンドウを青く塗りつぶす。
+		gl.glClearColor(0f, 0f, 1f, 1.0f);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) { }
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		//gl.glColor3f(1.0f, 0.0f, 0.0f); //ここは削除
+		gl.glBegin(GL_POLYGON);
+		gl.glColor3f(1.0f, 0.0f, 0.0f); // 赤
+		gl.glVertex2f(-0.9f,-0.9f);
+		gl.glColor3f(0.0f, 1.0f, 0.0f); // 緑
+		gl.glVertex2f(0.9f, -0.9f);
+		gl.glColor3f(0.0f, 0.0f, 1.0f); // 青
+		gl.glVertex2f(0.9f, 0.9f);
+		gl.glColor3f(1.0f, 1.0f, 0.0f); // 黄
+		gl.glVertex2f(-0.9f, 0.9f);
+		gl.glEnd();
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+}
+</code></pre>
+
+<h2><a  class="label"  id="C5">5.座標系とマウス・キーボードによる操作</a></h2>
+<h3><a  class="label"  id="S5.1">5.1座標軸とビューポート</a></h3>
+
+<p>ウィンドウ内に表示する図形の座標軸は、そのウィンドウ自体の大きさと図形表示を行う"空間"との関係で決定します。開いたウィンドウの位置や大きさはマウスを使って変更することができますが、その情報はウィンドウマネージャを通じて、イベントとしてプログラムに伝えられます。<br>
+これまでのプログラムでは、ウィンドウのサイズを変更すると、表示内容もそれにつれて拡大縮小していました。これを、表示内容の大きさを変えずに、表示領域のみを広げるようにしてみましょう。</p>
+<h3><a  class="label"  id="S5.2">5.2マウスボタンのクリックと、マウスイベント</a></h3>
+<p>マウスのボタンが押されたことを知るには、GLWindowのインスタンスに対し、addMouseListener(リスナーインスタンス)によりイベントリスナーを設定します。<br>以下のソースプログラムをNewtMouseHandleSample.javaというファイル名で作成し、実行してみてください。</p>
+<pre  class="source"><code>package demos.basic;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
+import java.util.ArrayList;
+import java.util.List;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.FPSAnimator;
+import static com.jogamp.opengl.GL2.*;
+
+public class NewtMouseHandleSample implements GLEventListener, com.jogamp.newt.event.MouseListener { //(1)
+	
+	public static void main(String[] args) {
+		new NewtMouseHandleSample();
+	}
+	
+	private final List<point2d> points;
+	
+	public NewtMouseHandleSample() {
+		points = new ArrayList<>();
+		
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+		final GLWindow glWindow = GLWindow.create(caps);
+		glWindow.setTitle("Mouse Handle Sample (Newt)");
+		glWindow.setSize(300, 300); //(2)
+		
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				System.exit(0);
+			}
+		});
+		
+		glWindow.addGLEventListener(this);
+		glWindow.addMouseListener(this); //(3)
+		FPSAnimator animator = new FPSAnimator(30); //(4)
+		animator.add(glWindow);
+		animator.start();
+		
+		glWindow.setPosition(500, 500);
+		glWindow.setVisible(true);
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL gl = drawable.getGL();
+		//背景を白く塗りつぶす。
+		gl.glClearColor(1f, 1f, 1f, 1.0f);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x,int y, int width, int height) {
+		GL2 gl = drawable.getGL().getGL2();
+		//gl.glViewport(x, y, width, height); //(5)Jogl内部で実行済みなので不要。
+		gl.glMatrixMode(GL_PROJECTION); //(6)透視変換行列を指定
+		gl.glLoadIdentity();　　　　　　　 //(7)透視変換行列を単位行列にする
+		System.out.printf("x:%d, y:%d, w:%d, h:%d, %n", x, y, width, height);
+		//これによりウィンドウをリサイズしても中の図形は大きさが維持される。
+		//また、第3、第4引数を入れ替えることによりGLWindowの座標系(左上隅が原点)とデバイス座標系(左下隅が原点)の違いを吸収している。
+		gl.glOrthof(x, x + width, y + height, y, -1.0f, 1.0f); //(8)
+		
+		gl.glMatrixMode(GL_MODELVIEW); //(9)モデルビュー変換行列を指定
+		gl.glLoadIdentity(); //(10)モデルビュー変換行列を単位行列にする
+	}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL_COLOR_BUFFER_BIT);
+		gl.glColor3f(1.0f, 0.0f,0.0f); // 赤
+		gl.glBegin(GL_LINES);
+		
+		//p1のところで+1しているので、iが範囲を超えないようループ回数を一つ減らしている。
+		for(int i = 0; i < points.size() - 1; i++) { //(11)
+			Point2D.Float p0 = (Float) points.get(i);
+			Point2D.Float p1 = (Float) points.get(i + 1);
+			gl.glVertex2d(p0.getX(), p0.getY()); // 今の位置
+			gl.glVertex2d(p1.getX(), p1.getY()); // 次の位置
+		}
+		gl.glEnd();
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+	
+	//ここから下で、com.jogamp.newt.event.MouseListenerインターフェースのメソッドを実装。 (12)
+	
+	@Override
+	public void mouseClicked(com.jogamp.newt.event.MouseEvent e) {
+		System.out.printf("%d, %d%n", e.getX(), e.getY());
+		points.add(new Point2D.Float(e.getX(), e.getY())); //(13)
+	}
+	
+	@Override
+	public void mouseEntered(com.jogamp.newt.event.MouseEvent e) { }
+	
+	@Override
+	public void mouseExited(com.jogamp.newt.event.MouseEvent e) { }
+	
+	@Override
+	public void mousePressed(com.jogamp.newt.event.MouseEvent e) { }
+	
+	@Override
+	public void mouseReleased(com.jogamp.newt.event.MouseEvent e) { }
+	
+	@Override
+	public void mouseMoved(com.jogamp.newt.event.MouseEvent e) { }
+	
+	@Override
+	public void mouseDragged(com.jogamp.newt.event.MouseEvent e) { }
+	
+	@Override
+	public void mouseWheelMoved(com.jogamp.newt.event.MouseEvent e) { }
+}
+</point2d></code></pre>
+<p>これを実行し、ウィンドウ内で適当にクリックしてみてください。次のように、クリックした点が結ばれて表示されます。また、ウィンドウのサイズを変えても中の図形の大きさは維持されていることがわかると思います。<br>
+<img  alt="矩形の中に何本か直線がひかれている"  src="NewtMouseHandleSample.png"  height="503"  width="586"></p>
+<p>(3)でGLWindowのインスタンスに対しキーボードのイベントリスナーを登録していますが、ここではNewtMouseHandleSampleクラスのインスタンス自身をthisとして登録しています。そこで(1)のようにリスナーを実装していることを宣言し、(12)以降で必要なメソッドを記述しています。</p>
+<p>(13)でマウスがクリックされた位置をList<java.awt.geom.point2d.float> pointsに保存し、display()メソッドの中で使っています。</java.awt.geom.point2d.float></p>
+
+<p>(1)のcom.jogamp.newt.event.MouseListenerは以下のメソッドを持つインターフェースです。SwingのMouseListener,MouseMotionListener,MouseWheelListenerのメソッドを全て併せ持つインターフェースになっています。マウスがクリックされたり、ドラッグされたり、マウスをクリックせずに動かしたとき、マウスホイールが回転されたときなどに呼ばれます。</p><pre
+ class="source"><code>
+@Override
+public void mouseClicked(com.jogamp.newt.event.MouseEvent e);
+@Override
+public void mouseEntered(com.jogamp.newt.event.MouseEvent e);
+@Override
+public void mouseExited(com.jogamp.newt.event.MouseEvent e);
+@Override
+public void mousePressed(com.jogamp.newt.event.MouseEvent e);
+@Override
+public void mouseReleased(com.jogamp.newt.event.MouseEvent e);
+@Override
+public void mouseMoved(com.jogamp.newt.event.MouseEvent e);
+@Override
+public void mouseDragged(com.jogamp.newt.event.MouseEvent e);
+@Override
+public void mouseWheelMoved(com.jogamp.newt.event.MouseEvent e);
+</code></pre>
+<p>mouseClicked()、mousePressed()、mouseReleased()は、java.awt.event.MouseEventクラスと同様、ボタンを押すとmousePressed()が呼ばれ、離すとmouseReleased()の後、mouseClicked()の順で呼ばれます。</p>
+<p>ところで、サンプルプログラムの後ろのほうに何もしないメソッドが並んでいますが、Swingではこのような場合java.awt.event.MouseAdapterクラスを使い必要なメソッドだけを実装します。<br>NEWTでも同様のcom.jogamp.newt.event.MouseAdapterクラスが用意されていますので、以下のように短くすることができます。</p>
+<pre  class="source"><code>
+public class NewtMouseHandleSample implements GLEventListener {// com.jogamp.newt.event.MouseListener を削除
+	//glWindow.addMouseListener(this);//(3)削除
+	glWindow.addMouseListener(new com.jogamp.newt.event.MouseAdapter() {
+		@Override
+		public void mouseClicked(com.jogamp.newt.event.MouseEvent e) {
+			System.out.printf("%d, %d%n", e.getX(), e.getY());
+			points.add(new Point2D.Float(e.getX(), e.getY()));
+		}
+	});
+	//(省略)
+	//ここから下で、com.jogamp.newt.event.MouseListenerインターフェースのメソッドを実装。 (12)
+	//これ以降のMouseListenerインターフェースを実装していた部分を削除
+	// @Override
+	// public void mouseClicked(com.jogamp.newt.event.MouseEvent e) { //(13)
+		// System.out.printf("%d, %d%n", e.getX(), e.getY());
+		// points.add(new Point2D.Float(e.getX(), e.getY()));
+	// }
+	//
+	// @Override
+	// public void mouseReleased(com.jogamp.newt.event.MouseEvent e) {
+		// System.out.println("mouse released");
+	// }
+	// @Override
+	// public void mouseEntered(com.jogamp.newt.event.MouseEvent e) {}
+	//
+	// @Override
+	// public void mouseExited(com.jogamp.newt.event.MouseEvent e) {}
+	//
+	// @Override
+	// public void mousePressed(com.jogamp.newt.event.MouseEvent e) {}
+	//
+	// @Override
+	// public void mouseMoved(com.jogamp.newt.event.MouseEvent e) { }
+	//
+	// @Override
+	// public void mouseDragged(com.jogamp.newt.event.MouseEvent e) { }
+	//
+	// @Override
+	// public void mouseWheelMoved(com.jogamp.newt.event.MouseEvent e) {}
+</code></pre>
+<p>com.jogamp.newt.event.MouseEventはマウスが操作されたときの情報が格納されています。以下の主要なメソッドがあります。
+メソッドは他にもありますので、詳しくは<a  href="#Reference">API doc</a>をご覧ください。プレッシャーや３次元デバイスの操作にも対応しているようです。</p>
+
+<pre  class="source"><code>int getX();
+int getY();
+short getClickCount();
+
+short getButton();
+int getModifiers();
+float[] getRotation();
+
+float getRotationScale();
+
+float[] getRotationXYZ(float rotationXorY, int mods);
+
+float getMaxPressure();
+
+float[] getAllPressures();
+
+float getPressure(boolean normalized);
+
+float getPressure(int index, boolean normalized);
+</code></pre>
+<p>getX()、getY()で得られる座標は、GLWindowの<strong>左上隅(タイトルバーを除く)を原点(0,0)</strong>とした画面上の画素の位置になります。<strong>デバイス座標系とは上下が反転している</strong>ので気をつけてください。なお、Swingの場合、GLCanvas,GLJPanelの各コンポーネントの左上隅が原点になります。</p>
+<p>ダブルクリックはgetClickCount()で調べられます。<br>どのボタンが押されたのかを調べるには、Swingと同様、getButton()を使います。MouseEventクラスで定義されている以下の定数が返されます。なお、これはBUTTON_9まで定義されているので、３ボタンマウスだけでなく、ゲームパッドのようなものも想定しているのだと思われます。<br>   BUTTON1:左クリック<br>   BUTTON2:中クリック<br>   BUTTON3:右クリック<br>
+なお、SwingUtilities.isRightMouseButton()などに相当するメソッドは用意されていません。<br>
+</p>
+
+<p>キーボードの特殊キー(シフトキー、コントロールキー、WindowsのWindowsキー、OS XのコマンドキーとOptionキー)を押しながらマウスをクリックした場合、以下の通り検出できるようになっています。</p>
+<p>getModifiers()はcom.jogamp.newt.event.InputEventで定義されている定数SHIFT_MASK,CTRL_MASK,ALT_MASK,META_MASK,ALT_GRAPH_MASKなどを返します。他にもBUTTON1_MASKからBUTTON9_MASKが定義されているので、これもゲームパッドへの対応が考慮されているのかもしれません。</p>
+<p>getModifiers()の他に、特殊キーの状態を直接得るための、以下のメソッドも用意されています。</p><pre  class="source"><code>public final boolean isAltDown();
+
+public final boolean isAltGraphDown();
+
+public final boolean isControlDown();
+
+public final boolean isMetaDown();
+
+public final boolean isShiftDown();
+
+</code></pre>
+<p>以下のようにサンプルソースを変えて動かしてみると、動きが理解出来ると思います。</p><pre  class="source"><code>glWindow.addMouseListener(new com.jogamp.newt.event.MouseAdapter() {
+	@Override
+	public void mouseClicked(com.jogamp.newt.event.MouseEvent e) { //(4)
+		System.out.printf("%d, %d%n", e.getX(), e.getY());
+		points.add(new Point2D.Float(e.getX(), e.getY()));
+		System.out.println("mouse clicked count:" + e.getClickCount());
+		System.out.println("mouse source :" + e.getButton());
+		System.out.println("mouse button 1:" + MouseEvent.BUTTON1);
+		System.out.println("mouse button 2 :" + MouseEvent.BUTTON2);
+		System.out.println("mouse button 3 :" + MouseEvent.BUTTON3);
+	}
+	
+	@Override
+	public void mouseReleased(com.jogamp.newt.event.MouseEvent e) {
+		System.out.println("mouse released");
+	}
+});
+</code></pre>
+
+<p>本節の冒頭のサンプルコードの(4)から(9)について説明します。以下に再掲します。</p>
+<pre  class="source"><code>@Override
+public void reshape(GLAutoDrawable drawable, int x,int y, int width, int height) {
+	GL2 gl = drawable.getGL().getGL2();
+	//gl.glViewport(x, y, width, height); //(5)Jogl内部で実行済みなので不要
+	gl.glMatrixMode(GL_PROJECTION); //(6)透視変換行列を指定
+	gl.glLoadIdentity();　　　　　　　 //(7)透視変換行列を単位行列にする
+	System.out.printf("x:%d, y:%d, w:%d, h:%d, %n", x, y, width, height);
+	//これによりウィンドウをリサイズしても中の図形は大きさが維持される。
+	//また、第3、第4引数を入れ替えることによりGLWindowの座標系(左上隅が原点)とデバイス座標系(左下隅が原点)の違いを吸収している。
+	gl.glOrthof(x, x + width, y + height, y, -1.0f, 1.0f); //(8)
+	
+	gl.glMatrixMode(GL_MODELVIEW); //(9)モデルビュー変換行列を指定
+	gl.glLoadIdentity(); //(10)モデルビュー変換行列を単位行列にする
+}
+</code></pre>
+<dl><dt><code><a  class="label"  id="GLVIEWPORT">void glViewport(int x,int y,int width,int height)<br></a></code></dt><dd>ビューポートを設定します。ビューポートとは、開いたウィンドウの中で、実際に描画が行われる領域のことをいいます。正規化デバイス座標系の2点(-1,-1)、(1,1)を結ぶ線分を対角線とする矩形領域がここに表示されます。最初の二つの引数x、yにはその領域の左下隅の位置、widthには幅、heightには高さをデバイス座標系での値、すなわちディスプレイ上の画素数で指定します。関数reshape()の引数width、heightにはそれぞれウィンドウの幅と高さが入っていますから、glViewport(0,0,width,height)はリサイズ後のウィンドウの全面を表示領域に使うことになります。</dd></dl>
+なお、C言語などではglViewport()が書かれている場合が多いようですが、JOGLの場合、reshape()が呼ばれる前に内部で実行されていますので、別のパラメータを設定する必要がない限り、プログラマが明示的に行う必要はありません。(reshape()のJavaDocに以下のように記載されています。)
+<pre  class="source"><code>For efficiency the GL viewport has already been updated via glViewport(x, y, width, height) when this method is called.</code></pre>
+<dl><dt><code>void glMatrixMode(intmode)　</code></dt><dd>操作の対象とする変換行列を指定します。modeにはGL_MODELVIEW、GL_PROJECTIONを指定します。他にもありますが、割愛します。</dd></dl>
+
+<p>(4)の以下のコードは、<a  href="#S7.1">後のアニメーションのところ</a>で説明します。</p>
+<pre  class="source"><code>FPSAnimator animator = new FPSAnimator(30); //(4)
+</code></pre><p><br></p>
+
+<h3><a  class="label"  id="S5.3">5.3 モデリング座標とビューイング変換について</a></h3>
+<p><a  class="label"  id="VIEWPIPE">座標変換のプロセス</a>は、</p><ol><li>図形の空間中での位置を決める「モデリング変換」</li><li>その空間を視点から見た空間に直す「ビューイング(視野)変換」</li><li>その空間をコンピュータ内の空間にあるスクリーンに投影する「透視変換」</li><li>スクリーン上の図形をディスプレイ上の表示領域に切り出す「ビューポート変換」</li></ol><p>という四つのステップで行われます。これまではこれらを区別せずに取り扱ってきました。すなわち、これらの投影を行う行列式を掛け合わせることで、単一の行列式として取り扱ってきたのです。</p>
+<p>しかし、図形だけを動かす場合は、モデリング変換の行列だけを変更すればいいことになります。また、後で述べる<a  href="#C9">陰影付け</a>は、透視変換を行う前の座標系で計算する必要があります。</p>
+<p>そこでOpenGLでは、「モデリング変換－ビューイング変換」の変換行列(モデルビュー変換行列)と、「透視変換」の変換行列を独立して取り扱う手段が提供されています。モデルビュー変換行列を設定する場合はglMatrixMode(GL_MODELVIEW)、透視変換行列を設定する場合はglMatrixMode(GL_PROJECTION)を実行します。</p>
+<p>カメラの画角などのパラメータを変更しない場合、ウィンドウを開いたときに一回だけ透視変換行列を設定すればよいので、これはreshape()の中で設定すればよいでしょう。あとは全てモデリング－ビューイング変換行列に対する操作なので、透視変換行列を設定した直後に、gl.glMatrixMode(GL_MODELVIEW)を実行します。</p>
+<dl><dt><code>void glLoadIdentity()</code></dt><dd>これは対象としている変換行列を初期化します(単位行列にする)。座標変換の合成は行列の積で表されますから、変換行列には初期値として単位行列を設定しておきます。</dd></dl><dl>
+<dt><code>void glOrthof(float left,float right,float bottom,float top,float near,float far)</code></dt><dd>glOrtho()はワールド座標系を正規化デバイス座標系に平行投影(orthographicprojection:正射影)する行列を変換行列に乗じます。引数には左から、leftに表示領域の左端の位置、rightに右端の位置、bottomに下端の位置、topに上端の位置、nearに前方面の位置、farに後方面の位置を指定します。これは、ビューポートに表示される空間の座標軸を設定します。なお、引数の型が全てdoubleとなる、glOrthod()という関数もあります。以下の説明では総称してglOrtho*()と記します。</dd></dl>
+<p>reshape()の処理によって、プログラムはglViewport()で指定した領域にglOrtho*()で指定した領域内の図形を表示するようになります。ここでglOrtho*()で指定する領域の大きさをビューポートの大きさに比例するように設定すれば、表示内容の大きさをビューポートの大きさにかかわらず一定に保つことができます。ここでビューポートの大きさは開いたウィンドウの大きさと一致させていますから、ウィンドウのリサイズしても表示内容の大きさを一定に保つことができます。</p>
+<div  class="figure"><img  src="libglut4.gif"  alt="ウィンドウ－ビューポート変換"  height="227"
+ width="487"></div>
+<p>図形はワールド座標系と呼ばれる空間にあり、その2点(l,b),(r,t)を結ぶ線分を対角線とする矩形領域を、2点(-1,-1),(1,1)を対角線とする矩形領域に投影します。この投影された座標系を正規化デバイス座標系(あるいはクリッピング座標系)と呼びます。</p>
+<p>この正規化デバイス座標系の正方形領域内の図形がデバイス座標系(ディスプレイ上の表示領域の座標系)のビューポートに表示されますから、結果的にワールド座標系からglOrtho*()で指定した矩形領域を切り取ってビューポートに表示することになります。</p>
+<p>ワールド座標系から切り取る領域は、"ＣＧ用語"的には「ウィンドウ」と呼ばれ、ワールド座標系から正規化デバイス座標系への変換は「ウィンドウイング変換」と呼ばれます。しかしウィンドウシステム(MS Windowsや、Unix系OSで使われるX Window System等)においては、「ウィンドウ」はアプリケーションプログラムがディスプレイ上に作成する表示領域のことを指すので、ここの説明ではこれを「座標軸」と呼んでいます。なお、正規化デバイス座標系からデバイス座標系への変換はビューポート変換と呼ばれます。</p>
+<p>glOrtho*()では引数としてleft、right、top、bottomの他にnearとfarも指定する必要があります。実はOpenGLは二次元図形の表示においても内部的に三次元の処理を行っており、ワールド座標系は奥行き(Z)方向にも軸を持つ三次元空間になっています。nearとfarには、それぞれこの空間の前方面(可視範囲の手前側の限界)と後方面(可視範囲の遠方の限界)を指定します。nearより手前にある面やfarより遠方にある面は表示されません。</p>
+<p>二次元図形は奥行き(Z)方向が0の三次元図形として取り扱われるので、ここではnear(前方面、可視範囲の手前の位置)を-1.0、far(後方面、遠方の位置)を1.0にしています。</p>
+<p>glOrtho*()を使用しなければ変換行列は単位行列のままなので、ワールド座標系と正規化デバイス座標系は一致し、ワールド座標系の2点(-1,-1)、(1,1)を対角線とする矩形領域がビューポートに表示されます。ビューポート内に表示する空間の座標軸が変化しないため、この状態でウィンドウのサイズを変化させると、それに応じて表示される図形のサイズも変わります。</p>
+<p>表示図形のサイズをビューポートの大きさにかかわらず一定にするには、glOrtho*()で指定するの領域の大きさをビューポートの大きさに比例するように設定します。例えばワールド座標系の座標軸が上記と同様にleft、right、top、bottom、near、farで与えられており、もともとのウィンドウの大きさがW×H、リサイズ後のウィンドウの大きさがw×hなら、glOrtho*(left*w/W,right*w/W,bottom*h/H,top*h/H,near,far)とします。これまでのプログラムでは、ワールド座標系の2点(-1,-1)、(1,1)を対角線とする矩形領域を300×300の大きさのウィンドウに表示した時の表示内容の大きさが常に保たれるよう設定しています。</p>
+<p>マウスの位置をもとに図形を描く場合は、マウスの位置からウィンドウ上の座標値を求めなければなりません。このサンプルプログラムではちょっと工夫して、ワールド座標系がこのマウスの座標系に一致するよう、また同時にウィンドウの上下も反転するよう、glOrthof()を設定しています。</p>
+
+<h3><a  class="label"  id="S5.4">5.4 座標変換について</a></h3>
+<p>
+    コンピューターグラフィックスの世界では、ある物体が世界のどこにあって、どちらを向いているかが非常に重要になります。どこにあるかを決めるためには、基準となる原点を定めて、<br>
+    そこからどれだけ離れているかを定める必要があります。原点は任意に定めても構いませんが、一度決めたらこれを統一して使わないと混乱することになります。<br>
+    <br>
+    例えば、地球上では、グリニッジ天文台を通る子午線を経度０とし、赤道を緯度０とするようなものです。<br>
+    物体の姿勢については、物体の特徴に合ったベクトルがどちらを向いているかにより表すことになります。このときに、基準となる、世界に対し不同の
+    基準方向が必要になります。<br>
+    先の例えでは、地上にいる人の姿勢を表すために、へそが向いている方向を人体の基準軸とし、北方向を方位角０度、地平線を向いている場合を仰角０
+    度とするようなものです。<br>
+    <br>
+    緯度・経度は、地上にいる人の位置を表現するには十分ですが、例えばロケットに乗って地球を離れている人の位置を表すことはできませんので、この
+    ような状況では、適切な座標系を選び直す必要があることに注意しないといけません。<br>
+    <br>
+    OpenGLの内部では、変換行列の拡大縮小(scale)、回転(rotate)、平行移動(translate)を、4行×4列の行列を使って表現して います。<br>
+    <br>
+    <math  display="block">
+      <semantics>
+        <mrow>
+          <mrow>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>x'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>y'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>z'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>w'</mi> </mrow> </mtd> </mtr> </mtable>
+              </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow>
+            <mo  stretchy="false">=</mo>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd><mi>a</mi></mtd><mtd><mi>e</mi></mtd><mtd><mi>i</mi></mtd><mtd><mi>m</mi></mtd>
+                  </mtr><mtr><mtd><mi>b</mi></mtd>
+                    <mtd><mi>f</mi></mtd><mtd><mi>j</mi></mtd><mtd><mi>n</mi></mtd>
+                  </mtr><mtr><mtd><mi>c</mi></mtd><mtd><mi>g</mi></mtd><mtd><mi>k</mi></mtd><mtd><mi>o</mi></mtd>
+                  </mtr><mtr><mtd><mi>d</mi></mtd><mtd><mi>h</mi></mtd><mtd><mi>l</mi></mtd><mtd><mi>p</mi></mtd>
+                  </mtr> </mtable> </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow> </mrow>
+          <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+            <mo  fence="true"  stretchy="true">)</mo> </mrow> </mrow> </semantics></math><br>
+    変換行列は、概念としては4行x4列の行列ですが、OpenGLで扱う実際のデータは、16個の要素からなる一次元配列となっています。行列と一次元配列との対応は、この図のアルファベット順のように、まず一列目の1行目から4行目までを使い、次に２列目以降を使うようになっています。これをcolumn majorと呼びます。これとは対照的に、Java3DやDirect3Dは、row majorといって、横方向を優先してたどっていくようになっています。<br>
+    <br>
+    ここで左辺の（x', y', z', w')は変換後の座標系、右辺の(x, y, z, w)が変換前の座標系です。3次元の変換なのに一つ次元を増やしているのは、これにより拡大縮小・回転による座標変換と、平行移動による座標変換を統一した形で表すことが出来て、都合がよいからです。d, h, l, pから成る追加した行を、同次座標と呼びます。<br>
+    <br>
+	
+</p><h4>平行移動</h4>
+    以下のような図形が、変換前の座標系にあるとします。<br>
+    <br>
+    <img  alt=""  src="transform-original.png"  height="234"  width="242"> <br>
+    <br>
+    これをΔＸ、ΔＹだけ平行移動することを考えます。<br>
+    <img  alt=""  src="transform-translate.png"  height="401"  width="357"><br>
+    これを表現するプログラムコードはこのようになります。最後の引数ΔZは、図では省略しています。<br>
+    <pre  class="source"><code  class="xml plain">gl.glTranslatef(ΔX, </code><code
+ class="xml plain"><code
+ class="xml plain">ΔY, ΔZ);</code></code></pre>
+    これを表現する行列式はこのようになります。<br>
+    <math  display="block">
+      <semantics>
+        <mrow>
+          <mrow>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>x'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>y'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>z'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>w'</mi> </mrow> </mtd> </mtr> </mtable>
+              </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow>
+            <mo  stretchy="false">=</mo>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd><mi>1</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi
+ mathcolor="#FF0000">ΔX</mi></mtd></mtr>
+                  <mtr><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi
+ mathcolor="#FF0000">ΔY</mi></mtd> </mtr>
+                  <mtr>
+                    <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd><mtd><mi
+ mathcolor="#FF0000">ΔZ</mi></mtd> </mtr>
+                  <mtr>
+                    <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+                  </mtr> </mtable>
+                <mo  fence="true"  stretchy="true">)</mo>
+                <mrow>
+                  <mo  fence="true"  stretchy="true">(</mo>
+                  <mrow>
+                    <mtable>
+                      <mtr>
+                        <mtd>
+                          <mi>x</mi> </mtd> </mtr>
+                      <mtr>
+                        <mtd>
+                          <mi>y</mi> </mtd> </mtr>
+                      <mtr>
+                        <mtd>
+                          <mi>z</mi> </mtd> </mtr>
+                      <mtr>
+                        <mtd>
+                          <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+                  <mo  fence="true"  stretchy="true">)</mo> </mrow> </mrow></mrow></mrow></mrow></semantics></math><br>
+    変換行列の<font  color="#ff0000">赤い文字の部分</font>だけが使われていることがわかります。この赤字の部分をtransform成分と呼ぶことがあります。<br>
+    <br>
+<h4>回転</h4>
+    元の図形をZ軸を中心として、反時計回りにφだけ回転してみます。<br>
+    <br>
+    <img  alt=""  src="transform-rotate1.png"  height="283"  width="324"><br>
+    これを表現するプログラムコードはこのようになります。<br>
+    <pre  class="source"><code  class="xml plain">gl.glRotatef(φ, 0, 0, 1</code><code
+ class="xml plain"><code
+ class="xml plain">);　　//ｚ軸による回転</code></code></pre>
+	ここで、最初の引数φの単位は度(degree)になります。Java.lang.Mathパッケージのsin(), cos(), atan2()などの角度の単位はラジアンなので、注意が必要です。回転の方向は、OpenGLでは上図 のとおり反時計回りが正と定義されています。２番から４番目までの引数で、回転の軸となるベクトルを表現しています。上記の場合Ｚ軸になります。<br>
+    これを表現する行列式はこのようになります。<br>
+    <math  display="block">
+      <semantics>
+        <mrow>
+          <mrow>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>x'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>y'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>z'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>w'</mi> </mrow> </mtd> </mtr> </mtable>
+              </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow>
+            <mo  stretchy="false">=</mo>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd><mi  mathcolor="#0000FF">cosφ</mi></mtd><mtd><mi  mathcolor="#0000FF">-sinφ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr><mtd><mi  mathcolor="#0000FF">sinφ</mi></mtd><mtd><mi  mathcolor="#0000FF">cosφ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr>
+                    <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">1</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr>
+                    <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+                  </mtr> </mtable> </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow> </mrow>
+          <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+            <mo  fence="true"  stretchy="true">)</mo> </mrow> </mrow> </semantics></math>
+    X軸、Y軸が軸となる回転は、それぞれ以下のようになります。<br>
+    <br>
+    <pre  class="source"><code  class="xml plain">gl.glRotatef(θ, 1, 0, 0</code><code
+ class="xml plain"><code
+ class="xml plain">);　　//X軸による回転</code></code></pre>
+    <math  display="block">
+      <semantics>
+        <mrow>
+          <mrow>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>x'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>y'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>z'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>w'</mi> </mrow> </mtd> </mtr> </mtable>
+              </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow>
+            <mo  stretchy="false">=</mo>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd><mi  mathcolor="#0000FF">1</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr>
+                    <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mi  mathcolor="#0000FF">cosθ</mi><mtd><mi
+ mathcolor="#0000FF">-sinθ</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr>
+                    <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">sinθ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">cosθ</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr>
+                    <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+                  </mtr> </mtable> </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow> </mrow>
+          <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+            <mo  fence="true"  stretchy="true">)</mo> </mrow> </mrow> </semantics></math><br>
+    <pre  class="source"><code  class="xml plain">gl.glRotatef(ψ, 0, 1, 0</code><code
+ class="xml plain"><code
+ class="xml plain">);　　//Y軸による回転。</code></code></pre>
+    <math  display="block">
+      <semantics>
+        <mrow>
+          <mrow>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>x'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>y'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>z'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>w'</mi> </mrow> </mtd> </mtr> </mtable>
+              </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow>
+            <mo  stretchy="false">=</mo>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd><mi  mathcolor="#0000FF">cosψ</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">sinψ</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr>
+                    <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">1</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr><mtd><mi  mathcolor="#0000FF">-sinψ</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">cosψ</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr>
+                    <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+                  </mtr> </mtable> </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow> </mrow>
+          <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+            <mo  fence="true"  stretchy="true">)</mo> </mrow> </mrow> </semantics></math>
+    <br>
+    これを見ると、青色の3x3の部分が変化していることがわかります。この部分をscaleRotate成分と呼ぶことがあるようです。<br>
+    <br>
+    上記の回転は、X軸、Y軸、あるいはZ軸だけを軸としていましたが、一般には、任意の角度の姿勢を表したいですよね。このような任意の姿勢を表す
+    には、以下の方法があります。いずれも回転の中心が原点と一致しているという前提があります。<br>
+	<!-- 区別するのは、行列式中で、どの部分が変換に使われているかを見ればいい。 -->
+	
+<h4>(1)オイラー角による回転</h4>
+<a  href="https://ja.wikipedia.org/wiki/%E3%82%AA%E3%82%A4%E3%83%A9%E3%83%BC%E8%A7%92">Wikipedia</a>に
+    わかりやすい解説があります。３つのパラメーターで表されます。回転軸そのものが動くことがポイントです。<br>
+    <br>
+	オイラー角による回転を表す行列は以下のようになります。まずβとγを掛けてから、αを掛けています。 <br>
+	出典<ul><li>http://www6.ocn.ne.jp/~simuphys/daen1-1.html</li>
+	<li>http://irobutsu.a.la9.jp/mybook/ykwkrAM/sim/EulerAngle.html</li></ul>
+
+<br>
+    <math  display="block">
+      <semantics>
+        <mrow>
+          <mrow>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>x'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>y'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>z'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>w'</mi> </mrow> </mtd> </mtr> </mtable>
+              </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow>
+            <mo  stretchy="false">=</mo> </mrow>
+          <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd><mi  mathcolor="#0000FF">cosγ</mi></mtd>
+					<mtd><mi  mathcolor="#0000FF">sinγ</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+                </mtr>
+                <mtr><mtd><mi  mathcolor="#0000FF">-sinγ</mi></mtd>
+					<mtd>
+					<mi  mathcolor="#0000FF">cosγ</mi></mtd>
+					<mtd><mi  mathcolor="#0000FF">0</mi></mtd>
+					<mtd><mi>0</mi></mtd>
+                </mtr>
+				<mtr>
+                  <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd>
+					<mi  mathcolor="#0000FF">1</mi></mtd><mtd><mi>0</mi></mtd>
+                </mtr>
+                
+                <mtr>
+                  <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+                </mtr> </mtable> </mrow>
+            <mo  fence="true"  stretchy="true">)</mo> </mrow>
+          <!--２番目 -->
+          <mo  fence="true"  stretchy="true">(</mo>
+          <mrow>
+            <mtable>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">1</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mi  mathcolor="#0000FF">cosβ</mi><mtd><mi
+ mathcolor="#0000FF">sinβ</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">-sinβ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">cosβ</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+              </mtr> </mtable> </mrow>
+          <mo  fence="true"  stretchy="true">)</mo><!-- 3番目 -->
+          <mo  fence="true"  stretchy="true">(</mo>
+          <mrow>
+            <mtable>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">cosα</mi></mtd><mtd><mi  mathcolor="#0000FF">sinα</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr><mtd><mi  mathcolor="#0000FF">-sinα</mi></mtd><mtd><mi  mathcolor="#0000FF">cosα</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">1</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+              </mtr> </mtable> </mrow>
+          <mo  fence="true"  stretchy="true">)
+		  
+	</mo>
+			  <!-- x, y, z-->
+		  <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+			<mo  fence="true"  stretchy="true">)</mo> </mrow><!-- end of x, y, z-->
+		  <!-- ２番目のイコール -->
+		  =
+		  <!-- 3番目 -->
+          <mo  fence="true"  stretchy="true">(</mo>
+          <mrow>
+            <mtable>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">cosγ</mi></mtd><mtd><mi  mathcolor="#0000FF">sinγcosβ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">sinγsinβ</mi></mtd><mtd><mi>1</mi></mtd>
+              </mtr>
+              <mtr><mtd><mi  mathcolor="#0000FF">-sinγ</mi></mtd><mtd><mi  mathcolor="#0000FF">cosγcosβ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">cosγsinβ</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">-sinβ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">cosβ</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+              </mtr> </mtable> </mrow>
+          <mo  fence="true"  stretchy="true">)</mo>
+          <mo  fence="true"  stretchy="true">(</mo>
+          <mrow>
+            <mtable>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">cosα</mi></mtd><mtd><mi  mathcolor="#0000FF">-sinα</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr><mtd><mi  mathcolor="#0000FF">sinα</mi></mtd><mtd><mi  mathcolor="#0000FF">cosα</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">1</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+              </mtr> </mtable> </mrow>
+          <mo  fence="true"  stretchy="true">)</mo>
+		  <!-- x, y, z-->
+		  <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+			<mo  fence="true"  stretchy="true">)</mo> </mrow><!-- end of x, y, z-->
+		  <mo  stretchy="false">=</mo>
+          <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd><mi>cosγcosβ-cosβsinαsinγ</mi></mtd><mtd><mi>cosγsinα+cosβcosαsinγ</mi></mtd><mtd><mi>sinγsinβ</mi></mtd><mtd><mi>0</mi></mtd>
+                </mtr>
+                <mtr>
+                  <mtd><mi>-sinγcosα-cosβsinαcosγ</mi></mtd><mtd><mi>-sinγsinα+cosβcosαcosγ</mi></mtd><mtd><mi>cosγsinβ</mi></mtd><mtd><mi>0</mi></mtd>
+                </mtr>
+                <mtr><mtd><mi>sinβsinα</mi></mtd><mtd><mi>-sinβcosα</mi></mtd><mtd><mi>cosβ</mi></mtd><mtd><mi>0</mi></mtd>
+                </mtr>
+                <mtr>
+                  <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+                </mtr> </mtable> </mrow>
+            <mo  fence="true"  stretchy="true">)</mo> </mrow>
+		  <!-- x, y, z-->
+		  <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+			<mo  fence="true"  stretchy="true">)</mo> </mrow><!-- end of x, y, z--> </mrow></semantics></math>
+    <br>
+<h4>(2)ピッチ、ロール、ヨーによる回転</h4>
+
+ピッチ角(φ)、ロール角(θ)、ヨー角(ψ)の３つのパラメーターで表されます。<br>
+飛行機を例にとると、ピッチが左右の翼を結ぶ軸を中心とした回転、ロールが機首と尾翼を結ぶ線を中心軸とした回転、ヨーが機首の東西南北の向きになります。<br>
+
+これを表す行列は以下のようになります。まずφとθを掛けてから、ψを掛けています。<br>
+
+<br>
+    <math  display="block">
+      <semantics>
+        <mrow>
+          <mrow>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>x'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>y'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>z'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>w'</mi> </mrow> </mtd> </mtr> </mtable>
+              </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow>
+            <mo  stretchy="false">=</mo> </mrow>
+          <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+			  				<mtr>
+                  <mtd><mi  mathcolor="#0000FF">1</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd>
+					<mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+                </mtr>
+
+                <mtr>
+									<mtd><mi  mathcolor="#0000FF">0</mi></mtd>
+									<mtd><mi  mathcolor="#0000FF">cosφ</mi></mtd>
+					<mtd>
+					<mi  mathcolor="#0000FF">-sinφ</mi></mtd>
+
+					<mtd><mi>0</mi></mtd>
+                </mtr>
+                <mtr>
+				<mtd>
+					  <mi  mathcolor="#0000FF">0</mi></mtd>
+                  <mtd><mi  mathcolor="#0000FF">sinφ</mi></mtd>
+					<mtd><mi  mathcolor="#0000FF">cosφ</mi></mtd><mtd><mi>0</mi></mtd>
+                </mtr>
+                
+                <mtr>
+                  <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+                </mtr> </mtable> </mrow>
+            <mo  fence="true"  stretchy="true">)</mo> </mrow>
+          <!--２番目 -->
+          <mo  fence="true"  stretchy="true">(</mo>
+          <mrow>
+            <mtable>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">cosθ</mi></mtd>
+                <mtd><mi  mathcolor="#0000FF">0</mi></mtd>
+				<mtd><mi  mathcolor="#0000FF">sinθ</mi></mtd>
+				<mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">0</mi></mtd>
+				<mtd><mi  mathcolor="#0000FF">1</mi></mtd>
+				<mtd><mi  mathcolor="#0000FF">0</mi></mtd>
+				<mtd><mi>0</mi></mtd>
+              </mtr>
+			  <mtr>
+				<mtd><mi  mathcolor="#0000FF">-sinθ</mi></mtd>
+                <mtd><mi  mathcolor="#0000FF">0</mi></mtd>
+				<mtd><mi  mathcolor="#0000FF">cosθ</mi></mtd>
+				<mi>0</mi>
+              </mtr>
+              <mtr>
+                <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+              </mtr> </mtable> </mrow>
+          <mo  fence="true"  stretchy="true">)</mo><!-- 3番目 -->
+          <mo  fence="true"  stretchy="true">(</mo>
+          <mrow>
+            <mtable>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">cosψ</mi></mtd><mtd><mi  mathcolor="#0000FF">-sinψ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr><mtd><mi  mathcolor="#0000FF">sinψ</mi></mtd><mtd><mi  mathcolor="#0000FF">cosψ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">1</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+              </mtr> </mtable> </mrow>
+          <mo  fence="true"  stretchy="true">)
+		  
+	</mo>
+			  <!-- x, y, z-->
+		  <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+			<mo  fence="true"  stretchy="true">)</mo> </mrow><!-- end of x, y, z-->
+		  <!-- ２番目のイコール -->
+		  =
+		  <!-- 3番目 -->
+          <mo  fence="true"  stretchy="true">(</mo>
+          <mrow>
+            <mtable>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">cosθ</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">sinθ</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr><mtd><mi  mathcolor="#0000FF">sinφsinθ</mi></mtd><mtd><mi  mathcolor="#0000FF">cosφ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">-sinφcosθ</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">-cosφsinθ</mi></mtd><mtd><mi  mathcolor="#0000FF">sinφ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">cosφcosθ</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+              </mtr> </mtable> </mrow>
+          <mo  fence="true"  stretchy="true">)</mo>
+          <mo  fence="true"  stretchy="true">(</mo>
+          <mrow>
+            <mtable>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">cosψ</mi></mtd><mtd><mi  mathcolor="#0000FF">-sinψ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr><mtd><mi  mathcolor="#0000FF">sinψ</mi></mtd><mtd><mi  mathcolor="#0000FF">cosψ</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">1</mi></mtd><mtd><mi>0</mi></mtd>
+              </mtr>
+              <mtr>
+                <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+              </mtr> </mtable> </mrow>
+          <mo  fence="true"  stretchy="true">)</mo>
+		  <!-- x, y, z-->
+		  <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+			<mo  fence="true"  stretchy="true">)</mo> </mrow><!-- end of x, y, z-->
+		  <mo  stretchy="false">=</mo>
+          <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd><mi>cosθcosψ</mi></mtd><mtd><mi>-cosθsinψ</mi></mtd><mtd><mi>sinθ</mi></mtd><mtd><mi>0</mi></mtd>
+                </mtr>
+                <mtr>
+                  <mtd><mi>sinφsinθcosψ+cosφsinψ</mi></mtd><mtd><mi>-sinφsinθsinψ+cosφcosψ</mi></mtd><mtd><mi>-sinφcosθ</mi></mtd><mtd><mi>0</mi></mtd>
+                </mtr>
+                <mtr><mtd><mi>-cosφsinθcosψ+sinφsinψ</mi></mtd><mtd><mi>cosφsinθsinψ+-sinφcosψ</mi></mtd><mtd><mi>cosφcosθ</mi></mtd><mtd><mi>0</mi></mtd>
+                </mtr>
+                <mtr>
+                  <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+                </mtr> </mtable> </mrow>
+            <mo  fence="true"  stretchy="true">)</mo> </mrow>
+		  <!-- x, y, z-->
+		  <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+			<mo  fence="true"  stretchy="true">)</mo> </mrow><!-- end of x, y, z--> </mrow></semantics></math>
+			<p>出典：http://www.songho.ca/opengl/gl_anglestoaxes.htmlのRxRyRzの項</p>
+			
+<h4>(3)クォータ二オンによる回転</h4>
+<p>クォータ二オン(四元数)と呼ばれる表現形式があります。この文書での解説は対象外としますが、<a  href="http://objectclub.jp/download/files/vecmath/vecmath.pdf">Java3DのVecmathについての解説</a>の、「回転とQuaternion」の項がわかりやすいと思います。３次元ベクトルで表した任意軸を中心とした回転を容易に行うために使われます。<br>
+(1)、(2)による回転は、ある物体の姿勢を表すには十分ですが、ゲームなどで使われる、２つの姿勢の間を補間したい場合には向いていないので、クォータニオンが使われるようです。例えば、シューティングゲームで、コンピュータで制御された敵のキャラクターが、最初は別の方向を向いていた銃を、プレイヤーに向ける場合の銃の動きなどが該当します。<br>
+なお、JOGLにはcom.jogamp.opengl.math.Quaternionという、クォータニオンをサポートするためのクラスが用意されています。<br>    <br>
+    <!--TODO JOGLにサポートする関数はあるか？ <br>
+http://jogamp.org/deployment/jogamp-next/javadoc/jogl/javadoc/com/jogamp/opengl/math/Quaternion.html<br>
+    <br>
+    setFromMatrix(), setFromAngleAxis()、setFromAngleNormalAxis(), setFromEuler(), <br>	toMatrix(),toAngleAxis(), toEuler(),</pre>
+    <br>
+    <br>
+    姿勢（ある物体がどちらを向いているか）と回転（物体が、どの軸を中心として、動いているか）は別の概念だと考えると理解しやすいように思います。<br>
+    <br>
+    <br>
+    TODO 任意軸＝＞四元数<br>
+    TODO
+    四元数＝＞？？？　http://marupeke296.com/DXG_No58_RotQuaternionTrans.html<br>
+    <br>
+    <br-->
+
+</p><h4>拡大・縮小</h4>
+<p>これは、Ｘ、Ｙ、Ｚの各方向について独立してスケールを指定できま す。<br>
+    以下はそれぞれＸ方向に1/2、X方向に２倍、Y方向に1/2、Y方向に２倍しています。 <br>
+    <img  alt=""  src="transform-scale-x-0.png"  height="238"  width="257">　<img
+ alt=""
+ src="transform-scale-x-1.png"
+ height="244"
+ width="382">　<img
+ alt=""
+ src="transform-scale-y-0.png"
+ height="243"
+ width="234">　<img
+ alt=""
+ src="transform-scale-y-1.png"
+ height="340"
+ width="250"><br>
+    また、以下のように軸に対して反転するよう指定することが出来ます。<br>
+    <img  alt=""  src="transform-flip-y.png"  height="348"  width="231"><br>
+    これを行うためのプログラムコードは以下のようになります。<br>
+    </p><pre  class="source"><code  class="xml plain">
+	gl.glScalef(0.5f, 1.0f, 1.0f);   //Ｘ方向を1/2
+	gl.glScalef(2.0f, 1.0f, 1.0f);   //Ｘ方向を2倍
+	gl.glScalef(1.0f, 0.5f, 1.0f);   //Ｙ方向を1/2
+	gl.glScalef(1.0f, 2.0f, 1.0f);   //Ｙ方向を2倍
+	gl.glScalef(1.0f, -1.0f, 1.0f); //Ｙ方向を反転
+<br><br></code></pre>
+    また、変換行列は以下のようになります。<br>
+    <math  display="block">
+      <semantics>
+        <mrow>
+          <mrow>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo>
+              <mrow>
+                <mtable>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>x'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>y'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>z'</mi> </mrow> </mtd> </mtr>
+                  <mtr>
+                    <mtd>
+                      <mrow>
+                        <mi>w'</mi> </mrow> </mtd> </mtr> </mtable>
+              </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow>
+            <mo  stretchy="false">=</mo>
+            <mrow>
+              <mo  fence="true"  stretchy="true">(</mo> <mrow><mtable><mtr><mtd><mi
+ mathcolor="#FF00FF">scaleX</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#FF00FF">scaleY</mi></mtd><mtd><mi
+ mathcolor="#0000FF">0</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr>
+                    <mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi  mathcolor="#0000FF">0</mi></mtd><mtd><mi
+ mathcolor="#FF00FF">scaleZ</mi></mtd><mtd><mi>0</mi></mtd>
+                  </mtr>
+                  <mtr>
+                    <mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>0</mi></mtd><mtd><mi>1</mi></mtd>
+                  </mtr> </mtable> </mrow>
+              <mo  fence="true"  stretchy="true">)</mo> </mrow> </mrow>
+          <mrow>
+            <mo  fence="true"  stretchy="true">(</mo>
+            <mrow>
+              <mtable>
+                <mtr>
+                  <mtd>
+                    <mi>x</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>y</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>z</mi> </mtd> </mtr>
+                <mtr>
+                  <mtd>
+                    <mi>w</mi> </mtd> </mtr> </mtable> </mrow>
+            <mo  fence="true"  stretchy="true">)</mo>  </mrow> </mrow>
+      </semantics></math> <br>
+    これを見ると、拡大・縮小では対角成分だけが使われています。一番下の行は平行移動、回転、拡大／縮小のいずれの操作でも{0, 0, 0, 1}となっていることが分かります。このような変換をアフィン変換と呼びます。<br>
+<br>
+<h4>平行移動、回転、拡大／縮小の組み合わせ</h4>
+前の方で、「回転の中心が原点と一致しているという前提があります」と述べましたが、一般的には任意の位置での拡大・縮小、回転、平行移動が必要となります。これを行うには、対象の物体のローカル座標で、拡大・縮小、回転、平行移動の順に行います。<br>
+行列で表現すると、スケール行列 * 回転行列 * 平行移動行列となります。(平行移動行列に対し回転移動行列を掛けてから、さらにスケール行列を掛けています)。<br>
+これをプログラムで表すと、以下のとおりの順番になります。行列を掛ける順番と逆になっていることに留意してください。<br>
+<br>
+<pre  class="source">	gl.glTranslatef(x, y, z);   //平行移動
+	gl.glRotatef(rot, ax, ay, zz);   //回転
+	gl.glScalef(sx, sy, sz);   //拡大、縮小
+</pre>              
+
+	<br>
+	これを図で表すと以下のようになります。<br>
+    <!--img alt="" src="transform-1.png" height="303" width="309"> <img
+      alt="" src="transform-2.png" height="295" width="288"> 
+<img alt="" src="transform-3.png" height="277" width="313"> 
+<img alt="" src="transform-4.png" height="356" width="384">
+<img alt="" src="transform-5.png" height="240" width="240"-->
+<img  alt=""  src="transform-process.png">
+<br>
+    <br>
+
+<h3><a  class="label"  id="S5.5">5.5 マウスのドラッグ</a></h3>
+<p>既出のcom.jogamp.newt.event.MouseListenerクラスにはドラッグ中に呼ばれるmouseDragged()メソッドと、ボタンを離してマウスを動かしたときに呼ばれるmouseMoved()メソッドがありますので、これを使って、簡単なペイントソフトもどきを作ってみます。以下のソースプログラムをNewtMouseDraggingSample.javaというファイル名で作成し、実行してみてください。</p>
+<pre  class="source"><code>
+package demos.basic;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
+import java.util.ArrayList;
+import java.util.List;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.FPSAnimator;
+import static com.jogamp.opengl.GL2.*;
+
+public class NewtMouseDraggingSample implements GLEventListener, com.jogamp.newt.event.MouseListener { //(1)
+	
+	public static void main(String[] args) {
+		new NewtMouseDraggingSample();
+	}
+	
+	private final List<list<point2d>> pointsList;
+	private final List<point2d> points;
+	public NewtMouseDraggingSample() {
+		pointsList = new ArrayList<>();
+		points = new ArrayList<>();
+		
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+		final GLWindow glWindow = GLWindow.create(caps);
+		glWindow.setTitle("Mouse Drag Sample (Newt)");
+		glWindow.setSize(300, 300);
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				System.exit(0);
+			}
+		});
+		
+		glWindow.addGLEventListener(this);
+		glWindow.addMouseListener(this); //(2)
+		FPSAnimator animator = new FPSAnimator(60);
+		animator.add(glWindow);
+		animator.start();
+		glWindow.setPosition(500, 500);
+		glWindow.setVisible(true);
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		//showGLInfo(drawable);
+		GL gl = drawable.getGL();
+		//背景を白く塗りつぶす。
+		gl.glClearColor(1f, 1f, 1f, 1.0f);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glMatrixMode(GL_PROJECTION);//透視変換行列を指定
+		gl.glLoadIdentity();//透視変換行列を単位行列にする
+		System.out.printf("x:%d, y:%d, w:%d, h:%d, %n", x, y, width, height);
+		gl.glOrthof(x, x + width, y + height, y, -1.0f, 1.0f);
+		
+		gl.glMatrixMode(GL_MODELVIEW);//モデルビュー変換行列を指定
+		gl.glLoadIdentity();//モデルビュー変換行列を単位行列にする
+	}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL_COLOR_BUFFER_BIT);
+		gl.glColor3f(1.0f, 0.0f,0.0f); // 赤
+		//現在ドラッグ中の図形を描画 (3)
+		render(gl, points);
+		//前の図形を描画 (4)
+		for(List<point2d> p : pointsList) {
+			render(gl, p);
+		}
+	}
+	
+	private void render(GL2 gl, List<point2d> p) {
+		gl.glBegin(GL_LINES);
+		//p1のところで+1しているので、iが範囲を超えないようループ回数を一つ減らしている。
+		for(int i = 0; i < p.size() - 1; i++) {
+			Point2D.Float p0 = (Float) p.get(i);
+			Point2D.Float p1 = (Float) p.get(i + 1);
+			gl.glVertex2d(p0.getX(), p0.getY()); // 今の位置
+			gl.glVertex2d(p1.getX(), p1.getY()); // 次の位置
+		}
+		gl.glEnd();
+	}
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+	
+	//ここから下で、com.jogamp.newt.event.MouseListenerインターフェースのメソッドを実装。 (5)
+	@Override
+	public void mouseDragged(com.jogamp.newt.event.MouseEvent e) {
+		points.add(new Point2D.Float(e.getX(), e.getY())); //(6)
+	}
+	
+	@Override
+	public void mouseReleased(com.jogamp.newt.event.MouseEvent e) {
+		pointsList.add(new ArrayList<point2d>(points)); //(7)
+		points.clear();
+	}
+	
+	@Override
+	public void mouseClicked(com.jogamp.newt.event.MouseEvent e) {}
+	
+	@Override
+	public void mouseEntered(com.jogamp.newt.event.MouseEvent e) {}
+	
+	@Override
+	public void mouseExited(com.jogamp.newt.event.MouseEvent e) {}
+	
+	@Override
+	public void mousePressed(com.jogamp.newt.event.MouseEvent e) {}
+	@Override
+	public void mouseMoved(com.jogamp.newt.event.MouseEvent e) {}
+	@Override
+	public void mouseWheelMoved(com.jogamp.newt.event.MouseEvent e) {}
+}
+</point2d></point2d></point2d></point2d></list<point2d></code></pre>
+		<p>これを実行し、ウィンドウ内で適当にドラッグしてみてください。次のように、ドラッグしたところには点が連続して描画され、ボタンを離した状態でマウスを動かすと描画されなくなります。また、ウィンドウのサイズを変えても中の図形の大きさは維持されていることがわかると思います。<br><img
+ alt=""
+ src="NewtMouseDraggingSample.png"
+ height="436"
+ width="414"></p>
+<p>プログラムは、以下のようになっています。<br>
+(2)でGLWindowのインスタンスに対しキーボードのイベントリスナーを登録しています。ここではNewtMouseDraggingSampleクラスのインスタンス自身を登録しています。そこで(1)のようにリスナーを実装していることを宣言し、(5)で必要なメソッドを記述しています。<br>
+(6)マウスのドラッグ中に呼ばれるmouseDragged()内で、点をList<point2d>型の変数pointsに追加しています。<br>
+(7)マウスが離されたときに呼ばれるmouseReleased()で、points変数を別のList<list<point2d>>型の変数pointsListに追加し、pointsについては次回ドラッグされた時に備えてクリアしています。<br>
+また、display()メソッド内での描画は、(3)でマウスドラッグ中の図形を表示し、(4)で、上記(7)で記録された、過去に描画された図形をまとめて描画するようにしています。</list<point2d></point2d></p>
+
+<h3><a  class="label"  id="S5.6">5.6 マウスホイールの操作</a></h3>
+<p>マウスホイールの操作により、図形の大きさを変えられるようにしてみます。以下のサンプルプログラムを、NewtMouseWheelSample.javaというファイル名で作成し、実行してみてください。</p>
+<pre  class="source"><code>
+package demos.basic;
+
+import static com.jogamp.opengl.GL.*;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.FPSAnimator;
+
+public class NewtMouseWheelSample implements GLEventListener, KeyListener {
+	private static final char KEY_ESC = 0x1b;
+	private static final float INIT_SCALE = 20f;
+	private static final int HEIGHT = 300;
+	private static final int WIDTH = 300;
+	
+	public static void main(String[] args) {
+		new NewtMouseWheelSample();
+	}
+	
+	private float scale = INIT_SCALE;
+	
+	public NewtMouseWheelSample() {
+		
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+		final GLWindow glWindow = GLWindow.create(caps);
+		glWindow.setTitle("Mouse wheel sample (Newt)");
+		glWindow.setSize(WIDTH, HEIGHT);
+		
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent arg0) {
+				System.exit(0);
+			}
+		});
+		
+		glWindow.addGLEventListener(this);
+		glWindow.addMouseListener(new com.jogamp.newt.event.MouseAdapter() {
+			@Override
+			public void mouseWheelMoved(com.jogamp.newt.event.MouseEvent e) {　　　 //(1)
+				float[] rot = e.getRotation(); //(2)
+				scale *= (rot[1] > 0 ? 1.005f : 0.995f); //(3)
+				System.out.println("scale:" + scale);
+			}
+		});
+		
+		glWindow.addKeyListener(this);
+		
+		FPSAnimator animator = new FPSAnimator(10);
+		animator.add(glWindow);
+		animator.start();
+		glWindow.setPosition(500, 500);
+		glWindow.setVisible(true);
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		//showGLInfo(drawable);
+		GL gl = drawable.getGL();
+		//背景を白く塗りつぶす。
+		gl.glClearColor(1f, 1f, 1f, 1.0f);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glOrthof(x, x + width, y, y + height, -1.0f, 1.0f); //(4)
+	}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL_COLOR_BUFFER_BIT);
+		gl.glColor3f(1.0f, 0.0f,0.0f); // 赤
+		gl.glBegin(GL_LINE_LOOP);
+		gl.glVertex2f(WIDTH/2 - scale, HEIGHT/2 - scale); //(5)
+		gl.glVertex2f(WIDTH/2 + scale, HEIGHT/2 - scale);
+		gl.glVertex2f(WIDTH/2 + scale, HEIGHT/2 + scale);
+		gl.glVertex2f(WIDTH/2 - scale, HEIGHT/2 + scale);
+		gl.glEnd();
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+	}
+	
+	@Override
+	public void keyReleased(KeyEvent e) {
+		char keyChar = e.getKeyChar();
+		
+		if( keyChar == ' ' ) {
+			scale = INIT_SCALE;
+			System.out.println("scale:" + scale);
+		}
+		if(keyChar == 'q' || keyChar == KEY_ESC) System.exit(0);
+	}
+}
+</code></pre>
+<p>以下のウィンドウが表示されました。マウスホイールを操作してみてください。中の図形が拡大したり縮小したりすると思います。スペースキーを押すと最初の大きさに戻ります。<br><img
+ alt="マウスホイールによる操作"
+ src="NewtMouseWheelSample.png"
+ height="436"
+ width="414"><br>
+(1)で、マウスホイールが操作されたときのイベントを受け取ります。(2)でマウスホイールの回転を取り出します。配列になっているのは、３Dマウスによる３軸の動きに対応するためだと思われます。ホイールの回転は添え字1の配列に格納されていました。回転方向により正負どちらかになるので、これに応じて(3)でscaleを変えています。<br>
+(4)では、glOrthof()によりビューポートを設定していますが、NewtMouseDraggingSample.javaで行っていたy軸方向の入れ替えはここでは行っていません。<br>
+(5)で、ウィンドウの中心から上下左右にscaleだけ離れた頂点をもつ正方形を描いています。</p>
+
+<h3><a  class="label"  id="S5.7">5.7 キーボードの操作</a></h3>
+<p>OpenGLのアプリケーションプログラムが開いたウィンドウには、Windowsのコマンドプロンプトのように、入力されたキーをウィンドウ上に表示するようにはなっていません。そのかわりマウスのボタン同様、キーをタイプするごとに実行する関数を指定できます。それにはGLWindowクラスのインスタンスに対し、addKeyListener(リスナーインスタンス名)を行い、キーリスナーを登録します。</p>
+<p>また、これまで作ったプログラムを終了するには、タイトルバーのクローズボタンをクリックするか、WindowsではALTキーとファンクションキーのF4を、OSXではCommandキーとqを同時に押す方法がありましたが、'q'のキーやESCキーをタイプしたときにも終了するするようにします。以下のようなプログラムを、NewtKeyboardInputSample.javaとして保存して実行してください。</p>
+<pre  class="source"><code>
+package demos.basic;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.FPSAnimator;
+
+public class NewtKeyboardInputSample implements GLEventListener, com.jogamp.newt.event.KeyListener { //(1)
+	private static final char KEY_ESC = 0x1b;
+	
+	public static void main(String[] args) {
+		new NewtKeyboardInputSample();
+	}
+	
+	private final GLWindow glWindow;
+	
+	public NewtKeyboardInputSample() {
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+		glWindow = GLWindow.create(caps);
+		glWindow.setTitle("Keyboard input demo (Newt)");
+		glWindow.setSize(300, 300);
+		
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				System.exit(0);
+			}
+		});
+		
+		glWindow.addGLEventListener(this);
+		glWindow.addKeyListener(this); //(2)
+		FPSAnimator animator = new FPSAnimator(10);
+		animator.add(glWindow);
+		animator.start();
+		glWindow.setVisible(true);
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		//背景を白く塗りつぶす。
+		gl.glClearColor(1f, 1f, 1f, 1.0f);
+		showGLInfo(drawable);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		System.out.println("dispose()");
+		if(animator != null) animator.stop();
+	}
+	
+	//ここから下で、com.jogamp.newt.event.MouseListenerインターフェースのメソッドを実装。 (3)
+	@Override
+	public void keyPressed(KeyEvent e) {
+		char keyChar = e.getKeyChar();
+		printKeyChar(keyChar, "pressed");
+		
+		if(e.isAltDown()) {
+			System.out.println("ALT key pressed");
+		}
+		if(e.isShiftDown()) {
+			System.out.println("Shift key pressed");
+		}
+		if(e.isControlDown()) {
+			System.out.println("Ctrl key pressed");
+		}
+		if(e.isAltGraphDown()) {
+			System.out.println("AltGraph key pressed");
+		}
+		if(e.isMetaDown()) {
+			System.out.println("Meta key pressed");
+		}
+	}
+	
+	@Override
+	public void keyReleased(KeyEvent e) {
+		char keyChar = e.getKeyChar(); //(4)
+		printKeyChar(keyChar, "released"); //(5)
+		
+		if(Character.isISOControl(keyChar)) {
+			System.out.println(Integer.valueOf(keyChar) + " released");
+		} else {
+			System.out.println(keyChar + " released");
+		}
+		
+		
+		if(e.isAltDown()) {
+			System.out.println("ALT key released");
+		}
+		if(e.isShiftDown()) {
+			System.out.println("Shift key released");
+		}
+		if(e.isControlDown()) {
+			System.out.println("Ctrl key released");
+		}
+		if(e.isAltGraphDown()) {
+			System.out.println("AltGraph key released");
+		}
+		if(e.isMetaDown()) {
+			System.out.println("Meta key released");
+		}
+		
+		if(keyChar == KEY_ESC || keyChar == 'q' || keyChar == 'Q' ) { //(6)
+			glWindow.destroy();
+		}
+	}
+	
+	private void printKeyChar(char keyChar, String type) {
+		if(Character.isISOControl(keyChar)) {
+			System.out.println(Integer.valueOf(keyChar) + type);
+		} else {
+			System.out.println(keyChar + type);
+		}
+	}
+}
+</code></pre>
+<p>(2)でGLWindowのインスタンスに対しキーボードのイベントリスナーを登録していますが、ここではNewtKeyboardInputSampleクラスのインスタンス自身を登録しています。<br>そこで(1)のようにリスナーを実装していることを宣言し、(3)で必要なメソッドを記述しています。</p>
+<p>Swingのjava.awt.event.KeyAdapterクラスと同様に、NEWTでもcom.jogamp.newt.event.KeyAdapterクラスが用意されていますので、以下のように必要なメソッドだけを実装できます。</p>
+<pre  class="source"><code>glWindow.addKeyListener(new com.jogamp.newt.event.KeyAdapter() {
+	@Override
+	public void keyPressed(KeyEvent e) {}
+	@Override
+	public void keyReleased(KeyEvent e) {}
+}
+</code></pre>
+<p>そして(4)で文字を取得し、(5)で'q'あるいはESCキーだった場合にGLWindowインスタンスのdestroy()メソッドを呼び出しています。<br>ここでSystem.exit(0)を呼び出すと、内部でリソースの解放が行われない可能性があるので、望ましくありません。</p>
+<p>ALT,Control,Shift,Command,ファンクションキーのような文字キー以外のタイプを検出するときは、このプログラムを実行して調べたいキーを押すと、コードが10進数で表示されますので、参考にしてください。</p>
+<p>なお、上記のとおりキー単位での入力には対応していますが、日本語を入力したいといったニーズには向いていません。どうしても入力したい場合、NEWTではなくSwingのJTextFieldなどを使うことになると思われます。</p>
+
+<h2><a  class="label"  id="C6">6.三次元図形を描く</a></h2>
+<h3><a  class="label"  id="S6.1">6.1二次元と三次元</a></h3>
+<p>これまでは二次元の図形の表示を行ってきましたが、OpenGLの内部では実際には三次元の処理を行っています。すなわち画面表示に対して垂直にZ軸が伸びており、これまではその三次元空間のxy平面への平行投影像を表示していました。</p><div
+ class="figure"><img
+ src="axis.gif"
+ alt="スクリーンの座標系"
+ height="254"
+ width="184"></div><p>試しに<a
+ href="#S4.5">4.5節</a>で作成したプログラム(FirstStepNewt.java)において、図形をy軸中心に25度回転してみましょう。</p><pre
+ class="source"><code>
+@Override
+public void display(GLAutoDrawable drawable) {
+	GL2 gl = drawable.getGL().getGL2();
+	gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+	//gl.glColor3f(1.0f, 0.0f, 0.0f); //ここは削除
+	<em>gl.glRotatef(25.0f, 0f, 1f, 0f);</em> //追加
+	gl.glBegin(GL_POLYGON);
+	gl.glColor3f(1.0f, 0.0f, 0.0f); // 赤
+	gl.glVertex2f(-0.9f,-0.9f);
+	gl.glColor3f(0.0f, 1.0f, 0.0f); // 緑
+	gl.glVertex2f(0.9f, -0.9f);
+	gl.glColor3f(0.0f, 0.0f, 1.0f); // 青
+	gl.glVertex2f(0.9f, 0.9f);
+	gl.glColor3f(1.0f, 1.0f, 0.0f); // 黄
+	gl.glVertex2f(-0.9f, 0.9f);
+	gl.glEnd();
+}
+</code></pre><dl><dt><a  class="label"  id="GLROTATEF"><code>glRotatef(float angle,float x,float y,float z)</code></a></dt><dd>変換行列に回転の行列を乗じます。引数はいずれもfloat型で、一つ目の引数angleは回転角(単位は度)、残りの三つの引数x、y、zは回転軸の方向ベクトルです。引数がdouble型ならglRotated()を使います。原点を通らない軸で回転させたい場合は、<a
+ href="#GLTRANSLATEF">glTranslatef()</a>を使って一旦軸が原点を通るように図形を移動し、回転後に元の位置に戻します。<a
+ href="#S7.1">7.1節</a>でこのような操作を行っています。</dd></dl><p>変更したプログラムを実行して、描かれる図形を見てください。
+<br><img  src="rotation-anim3.gif"><br>
+アニメーションの機能により、Y軸中心に回転しているため、横方向に延びたり縮んだりしていると思います。これは変換行列にglRotatef()による回転の行列が積算されるからです。これを防ぐには描画の度に変換マトリクスをglLoadIdentity()で初期化するか、後で述べるglPushMatrix()/glPopMatrix()を使って変換行列を保存します。</p>
+
+<h3><a  class="label"  id="S6.2">6.2線画を表示する</a></h3>
+<p>それでは、こんどは以下のような三次元の立方体を線画で描いてみましょう。JOGLにはGLUTから移植したglutWireCube()など、いくつか基本的な立体を描く関数があるのですが、ここでは自分で形状を定義してみたいと思います。</p><div
+ class="figure"><img
+ src="libglut5.gif"
+ alt="立方体の構造"
+ height="337"
+ width="400"></div>
+<p>この図形は8個の点を12本の線分で結びます。点の位置(幾何情報)と線分(位相情報)を別々にデータにします。</p>
+<pre  class="source"><code>float[][] vertex = {
+	{ 0.0f, 0.0f, 0.0f}, /* A */
+	{ 1.0f, 0.0f, 0.0f}, /* B */
+	{ 1.0f, 1.0f, 0.0f}, /* C */
+	{ 0.0f, 1.0f, 0.0f}, /* D */
+	{ 0.0f, 0.0f, 1.0f}, /* E */
+	{ 1.0f, 0.0f, 1.0f}, /* F */
+	{ 1.0f, 1.0f, 1.0f}, /* G */
+	{ 0.0f, 1.0f, 1.0f} /* H */
+};
+int[][] edge = {
+	{ 0, 1}, /* ア (A-B) */
+	{ 1, 2}, /* イ (B-C) */
+	{ 2, 3}, /* ウ (C-D) */
+	{ 3, 0}, /* エ (D-A) */
+	{ 4, 5}, /* オ (E-) */
+	{ 5, 6}, /* カ (-G) */
+	{ 6, 7}, /* キ (G-H) */
+	{ 7, 4}, /* ク (H-E) */
+	{ 0, 4}, /* ケ (A-E) */
+	{ 1, 5}, /* コ (B-) */
+	{ 2, 6}, /* サ (C-G) */
+	{ 3, 7} /* シ (D-H) */
+};
+</code></pre>
+<p>この場合、例えば"点C"(1,1,0)と"点D"(0,1,0)を結ぶ線分"ウ"は、以下のようにして描画できます。glVertex3dv()は、引数に三つの要素を持つfloat型の配列を与えて、頂点を指定します。</p>
+<pre  class="source"><code>gl.glBegin(GL_LINES);
+gl.glVertex3dv(vertex[edge[2][0]], 0); // 線分 "ウ" の一つ目の端点 "C" 
+gl.glVertex3dv(vertex[edge[2][1]], 0); // 線分 "ウ" の二つ目の端点 "D" 
+gl.glEnd();
+</code></pre>
+<p>従って立方体全部を描くプログラムは以下のようになります。なお、立方体がウィンドウからはみ出ないように、glOrtho()で表示する座標系を(-2,-2)～(2,2)にしています。ウィンドウ中央より右上の領域に表示されます。<br> 以下の内容のCubeSample.javaというファイル名で作成してください。</p>
+<pre  class="source"><code>
+package demos.basic;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.FPSAnimator;
+import static com.jogamp.opengl.GL2.*;
+
+public class CubeSample implements GLEventListener {
+	public static void main(String[] args){
+		new NewtWireCube();
+	}
+	
+	float[][] vertex = {
+		{ 0.0f, 0.0f, 0.0f}, /* A */
+		{ 1.0f, 0.0f, 0.0f}, /* B */
+		{ 1.0f, 1.0f, 0.0f}, /* C */
+		{ 0.0f, 1.0f, 0.0f}, /* D */
+		{ 0.0f, 0.0f, 1.0f}, /* E */
+		{ 1.0f, 0.0f, 1.0f}, /* F */
+		{ 1.0f, 1.0f, 1.0f}, /* G */
+		{ 0.0f, 1.0f, 1.0f} /* H */
+	};
+	
+	int[][] edge = {
+		{ 0, 1}, /* ア (A-B) */
+		{ 1, 2}, /* イ (B-C) */
+		{ 2, 3}, /* ウ (C-D) */
+		{ 3, 0}, /* エ (D-A) */
+		{ 4, 5}, /* オ (E-) */
+		{ 5, 6}, /* カ (-G) */
+		{ 6, 7}, /* キ (G-H) */
+		{ 7, 4}, /* ク (H-E) */
+		{ 0, 4}, /* ケ (A-E) */
+		{ 1, 5}, /* コ (B-) */
+		{ 2, 6}, /* サ (C-G) */
+		{ 3, 7} /* シ (D-H) */
+	};
+	
+	public CubeSample() {
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+		GLWindow glWindow = GLWindow.create(caps);
+		glWindow.setTitle("First demo (Newt)");
+		glWindow.setSize(300, 300);
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				System.exit(0);
+			}
+		});
+		glWindow.addGLEventListener(this);
+		FPSAnimator animator = new FPSAnimator(10); //(2)
+		animator.add(glWindow);
+		animator.start();
+		glWindow.setVisible(true);
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		//背景を白く塗りつぶす.
+		gl.glClearColor(1f, 1f, 1f, 1.0f);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+		GL2 gl = drawable.getGL().getGL2();
+		//gl.glViewport(0f, 0f, width, height); // Jogl内部で実行済みなので不要。
+		gl.glOrtho(-2.0, 2.0, -2.0, 2.0, -2.0, 2.0);
+	}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		// 黒色を指定
+		gl.glColor3f(0.0f, 0.0f, 0.0f);
+		//図形の描画
+		gl.glBegin(GL_LINES);
+		for (int i = 0; i < 12; i++) {
+			gl.glVertex3fv(vertex[edge[i][0]], 0); //(1)
+			gl.glVertex3fv(vertex[edge[i][1]], 0); //(1)
+		}
+		gl.glEnd();
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+}
+</code></pre>
+<dl><dt><code>glVertex3fv(float[] v,int offset)</code></dt><dd>glVertex3fv()は三次元の座標値を指定するのに使います。引数vは3個の要素を持つfloat型配列を指定します。v[0]にはx座標値、v[1]にはy座標値、v[2]にはz座標値を格納します。offsetには配列のオフセットを指定します。これは通常0です。C++言語ではこの引数は不要ですので、移植時には注意が必要です。double型の配列にしたい場合、glVertex3dv()を使います。なお、JOGLの場合、配列ではなくjava.nio.FloatBufferを引数とする同名の以下のメソッドが用意されています。</dd></dl><dl><dt><code>glVertex3fv(java.nio.FloatBuffer v)</code></dt><dd>引数vは<code>x座標値、y座標値、z座標値の</code>3個の要素を順番に格納したjava.nio.FloatBufferを指定します。引数をdouble型にしたい場合、java.nio.DoubleBufferを引数とするglVertex3dv()を使います。なお、ここでいうDoubleBufferは、グラフィック関係のアプリケーションで頻出するダブルバッファリングとは関係ありません。</dd></dl>
+
+<h3><a  class="label"  id="S6.3">6.3透視投影する</a></h3>
+<p>前のプログラムでは、立方体が画面に平行投影されるため、正方形しか描かないと思います。そこで現実のカメラのように透視投影をしてみます。これにはglOrtho()の代わりにgluPerspective()を使います。</p><p>gluPerspective()は座標軸の代わりに、カメラの画角やスクリーンのアスペクト比(縦横比)を用いて表示領域を指定します。またglOrtho()同様、前方面や後方面の位置の指定も行います。</p>
+<p>視点の位置の初期値は原点なので、このままでは立方体が視点に重なってしまいます。そこでglTranslatef()を使って立方体の位置を少し奥にずらしておきます。</p>
+<pre  class="source"><code>import com.jogamp.opengl.glu.GLU;//追加
+<em>private final GLU glu;//追加</em>
+public NewtWireCube() {
+	GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+	GLWindow glWindow = GLWindow.create(caps);
+<em>glu = new GLU();//追加</em>
+	glWindow.setTitle("First demo (Newt)");
+	//略
+}
+@Override
+public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+	GL2 gl = drawable.getGL().getGL2();
+	//gl.glViewport(0f, 0f, width, height); // Jogl内部で実行済みなので不要。
+	//gl.glOrtho(-2.0, 2.0, -2.0, 2.0, -2.0, 2.0); コメントアウト
+	<em> glu.gluPerspective(30.0, (double)w / (double)h, 1.0, 100.0);</em><em>gl.glTranslatef(0.0f, 0.0f, -5.0f);</em>
+}
+</code></pre>
+<dl><dt><code><a  class="label"  id="GLU">GLU</a></code></dt><dd><code>C/C++言語のGLUをJOGLに移植したもので、com.jogamp.opengl.glu.GLUパッケージとして提供されています。詳細は<a
+ href="#C12">12章</a>で説明します。</code></dd><dt><code><a
+ class="label"
+ id="GLUT">GLUT</a></code></dt><dd><code>ついでですが、GLUTについても移植されていて、com.jogamp.opengl.util.gl2.GLUTパッケージになっています。詳細は<a
+ href="#C12">12章</a>で説明します。</code></dd>
+<dt><code><a  class="label"  id="gluPerspective">gluPerspective(float fovy、float aspect、float zNear、float zFar)</a></code></dt><dd>変換行列に透視変換の行列を乗じます。最初の引数fovyはカメラの画角であり、度で表します。これが大きいほどワイドレンズ(透視が強くなり、絵が小さくなります)になり、小さいほど望遠レンズになります。二つ目の引数aspectは画面のアスペクト比(縦横比)であり、1であればビューポートに表示される図形のx方向とy方向のスケールが等しくなります。三つ目の引数zNearと四つ目の引数zFarは表示を行う奥行き方向の範囲で、zNearは手前(前方面)、zFarは後方(後方面)の位置を示します。この間にある図形が描画されます。この立体は視錐台と呼ばれます。<br><div
+ class="figure"><img
+ src="perspective.gif"
+ alt="透視変換の視野"
+ height="161"
+ width="513"></div></dd><dt><code><a
+ class="label"
+ id="GLTRANSLATEF">glTranslatef(float 	x、float y、float z)</a></code></dt><dd>変換行列に平行移動の行列を乗じます。引数はいずれもfloat型で、三つの引数x、y、zには現在の位置からの相対的な移動量を指定します。引数がdouble型ならglTranslated()を使います。</dd></dl><p>ウィンドウをリサイズしたときに表示図形がゆがまないようにするためには、gluPerspective()で設定するアスペクト比aspectを、<a
+ href="#GLVIEWPORT">glViewport()</a>で指定したビューポートの縦横比(w/h)と一致させます。</p><p>上のプログラムのように、リサイズ後のウィンドウのサイズをそのままビューポートに設定している場合、仮にaspectが定数であれば、ウィンドウのリサイズに伴って表示図形が伸縮するようになります。したがって、ウィンドウをリサイズしても表示図形の縦横比が変わらないようにするために、ここではaspectをビューポートの縦横比に設定しています。</p>
+
+<h3><a  class="label"  id="S6.4">6.4視点の位置を変更する</a></h3>
+<p>前のプログラムのように、視点の位置を移動するには、図形の方をglTranslated()やglRotated()を用いて逆方向に移動することで実現できます。しかし、視点を任意の位置に指定したいときにはgluLookAt()を使うと便利です。</p>
+<pre  class="source"><code>@Override
+public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+	GL2 gl = drawable.getGL().getGL2();
+	//gl.glViewport(0f, 0f, width, height); // Jogl内部で実行済みなので不要。
+	//gl.glOrtho(-2.0, 2.0, -2.0, 2.0, -2.0, 2.0); コメントアウト
+	glu.gluPerspective(30.0, (double)w / (double)h, 1.0, 100.0);
+	gl.glTranslatef(0.0f, 0.0f, -5.0f);
+	<em>gluLookAt(3.0f, 4.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);</em>
+}
+</code></pre>
+<dl><dt><code>void gluLookAt(float ex、float ey、float ez、float cx、float cy、float cz、float ux、float uy、float uz)</code></dt><dd>この最初の三つの引数ex、ey、ezは視点の位置、次の三つの引数cx、cy、czは目標の位置、最後の三つの引数ux、uy、uzは、ウィンドウに表示される画像の「上」の方向を示すベクトルです。</dd></dl>
+<p>この例では(3,4,5)の位置から原点(0,0,0)を眺めますから、立方体の中心の頂点がウィンドウの中心に来ると思います。</p><p><br></p>
+<h2><a  class="label"  id="C7">7.アニメーション</a></h2>
+<h3><a  class="label"  id="S7.1">7.1図形を動かす</a></h3>
+<p>ここまでできたら、今度はこの立方体を回してみましょう。<br>
+一つ注意しなければいけないことがあります。繰り返し描画を行うには、描画の度に座標変換の行列を設定する必要があります。<br>
+カメラ(視点)の位置を動かすアニメーションを行う場合は、描画のたびにgluLookAt()によるカメラの位置や方向の設定(ビューイング変換行列の設定)を行う必要があります。同様に物体が移動したり回転したりするアニメーションを行う場合も、描画のたびに物体の位置や回転角の設定(モデリング変換行列の設定)を行う必要があります。したがって、これらはdisplay()の中で設定します。<br>
+</p><p>ここで、マウスの左ボタンをクリックしている間、立方体が回転するようなプログラムを作ります。ついでに右ボタンをクリックすると立方体が1ステップだけ回転し、'q'、'Q'、またはESCキーでプログラムが終了するようにします。<br>以下の内容のCubeSample2.javaというファイルを作ってください。</p>
+<pre  class="source"><code>
+package demos.basic;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
+import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.newt.event.MouseListener;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.FPSAnimator;
+import static com.jogamp.opengl.GL2.*;
+
+public class CubeSample2 implements GLEventListener, MouseListener, KeyListener {
+	
+	public static void main(String[] args){
+		new CubeSample2();
+	}
+	
+	float[][] vertex = {
+	{ 0.0f, 0.0f, 0.0f}, /* A */
+	{ 1.0f, 0.0f, 0.0f}, /* B */
+	{ 1.0f, 1.0f, 0.0f}, /* C */
+	{ 0.0f, 1.0f, 0.0f}, /* D */
+	{ 0.0f, 0.0f, 1.0f}, /* E */
+	{ 1.0f, 0.0f, 1.0f}, /* F */
+	{ 1.0f, 1.0f, 1.0f}, /* G */
+	{ 0.0f, 1.0f, 1.0f} /* H */
+	};
+	
+	int[][] edge = {
+	{ 0, 1}, /* ア (A-B) */
+	{ 1, 2}, /* イ (B-C) */
+	{ 2, 3}, /* ウ (C-D) */
+	{ 3, 0}, /* エ (D-A) */
+	{ 4, 5}, /* オ (E-) */
+	{ 5, 6}, /* カ (-G) */
+	{ 6, 7}, /* キ (G-H) */
+	{ 7, 4}, /* ク (H-E) */
+	{ 0, 4}, /* ケ (A-E) */
+	{ 1, 5}, /* コ (B-) */
+	{ 2, 6}, /* サ (C-G) */
+	{ 3, 7} /* シ (D-H) */
+	};
+	
+	private final GLU glu;
+	<em>private final Animator animator;</em> //(1)
+	private final GLWindow glWindow;
+	private boolean willAnimatorPause = false;
+	private static final char KEY_ESC = 0x1b;
+	
+	//回転角
+	float r = 0;
+	
+	public CubeSample2() {
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+		glu = new GLU();
+		
+		glWindow = GLWindow.create(caps);
+		glWindow.setTitle("Cube demo (Newt)");
+		glWindow.setSize(300, 300);
+		glWindow.addGLEventListener(this);
+		
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				System.exit(0);
+			}
+		});
+		
+		glWindow.addMouseListener(this);
+		glWindow.addKeyListener(this);
+		<em>animator = new Animator();</em> //(2)
+		<em>animator.add(glWindow);</em> //(3)
+		<em>animator.start();</em> //(4)
+		<em>animator.pause();</em> //(5)
+		glWindow.setVisible(true);
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		//背景を白く塗りつぶす.
+		gl.glClearColor(1f, 1f, 1f, 1.0f);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+		GL2 gl = drawable.getGL().getGL2();
+		
+		gl.glMatrixMode(GL_PROJECTION);
+		gl.glLoadIdentity();
+		glu.gluPerspective(30.0, (double)width / (double)height, 1.0, 300.0);
+		
+		// 視点位置と視線方向
+		glu.gluLookAt(3.0f, 4.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		gl.glMatrixMode(GL_MODELVIEW);
+	}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		
+		gl.glLoadIdentity();
+		
+		// 図形の回転
+		gl.glRotatef(r, 0.0f, 1.0f, 0.0f); //(6)
+		// 図形の描画
+		gl.glColor3f(0.0f, 0.0f, 0.0f);
+		gl.glBegin(GL_LINES);
+		for (int i = 0; i < 12; i++) {
+			gl.glVertex3fv(vertex[edge[i][0]], 0);
+			gl.glVertex3fv(vertex[edge[i][1]], 0);
+		}
+		gl.glEnd();
+		
+		//一周回ったら回転角を 0 に戻す
+		if (r++ >= 360.0f) r = 0;
+		System.out.println("anim:" + animator.isAnimating() + ", r:" + r);
+		if(willAnimatorPause) {
+			animator.pause(); //(8)
+			System.out.println("animoator paused:");
+			willAnimatorPause = false; 
+		}
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent e) {}
+	
+	@Override
+	public void keyReleased(KeyEvent e) {
+		char keyChar = e.getKeyChar();
+		if(keyChar == KEY_ESC || keyChar == 'q' || keyChar == 'Q') {
+			glWindow.destroy();
+		}
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) { }
+	
+	@Override
+	public void mouseEntered(MouseEvent e) { }
+	
+	@Override
+	public void mouseExited(MouseEvent e) {}
+	
+	@Override
+	public void mousePressed(MouseEvent e) {
+		switch(e.getButton()) {
+			case MouseEvent.BUTTON1:
+				animator.resume(); //(9)
+				System.out.println("button 1, left click");
+				break;
+			case MouseEvent.BUTTON2:
+				System.out.println("button 2");
+				break;
+			case MouseEvent.BUTTON3:
+				System.out.println("button 3, right click");
+				willAnimatorPause = true; //(10)
+				animator.resume(); //(11)
+				break;
+			default:
+				//empty
+		}
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		animator.pause();
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e) { }
+	
+	@Override
+	public void mouseDragged(MouseEvent e) {}
+	
+	@Override
+	public void mouseWheelMoved(MouseEvent e) {}
+}
+</code></pre>
+<p>JOGLの場合、定期的に画面を更新するために、AnimoatorクラスまたはFPSAnimatorクラスを使います。実は、これは既に<a  href="#S6.1">6.1節</a>で図形が横方向に延びたり縮んだりするところで使っています。(NEWTを使う場合、FPSAnimatorクラスを使わないとアプリケーションが起動してから数秒で終了してしまうため、使わざるを得なかったという事情がありました)。</p>
+<p>FPSAnimoatorクラスまたはAnimatorクラスの使い分けについては、前者のFPSは"Frame Per Second"の略で、ゲームなどのように画面の更新頻度を一定に保ちたい場合にこちらを使い、後者は特にFPSを指定する必要がない場合に使えば良いと思います。但し、FPSAnimatorを使っていても、パソコンの負荷の状況によっては指定されたレートが保証される訳ではないようです。<br>
+サンプルでは、特にFPSを指定する必要がないため、Animatorクラスを使っています。</p>
+
+<p>(1)で変数animatorを定義し、CubeSample2クラスのコンストラクタ内で(2)animatorを初期化、(3)glWindowとの関係を定義、(4)のanimator.start();でアニメーション開始を指定しています。通常は、(4)のanimator.start()だけで良いのですが、ここではマウスクリック時だけ回転させるため、直後に(5)のanimator.pause()で停止しています。<br>
+そして、(9)でマウス左ボタンをクリックしている間は、animator.resume()を呼ぶので、display()メソッドが呼ばれて、図形が回転し続けるようにしています。<br>
+(10)でマウス右ボタンがクリックされたことを検出したら、変数willAnimatorPauseをtrueにすると共に、(11)でanimator.resume()を呼ぶので、display()メソッドが呼ばれます。display()内では、willAnimatorPauseがtrueなら(8)でanimator.pause()を呼んでいるので、アニメーションは停止し、この後display()が呼ばれなくなるので、図形の回転も止まります。従って、図形は１ステップだけ回転しますが、右ボタンを押し続けても回転しません。回転させるには、いったんマウスを放して、もう一度右クリックします。</p>
+
+<p>ここで、(1)のanimator変数のクラスをFPSAnimatorに変え、(2)をanimator = FPSAnimator(30);のように変えても同じように動作します。FPSAnimatorのコンストラクタは以下のようなバリエーションがあります。２番目以降は、内部で、最初のコンストラクタを、デフォルトの引数(nullあるいはfalse)を指定して呼び出しています。</p>
+
+<dl><dt><code>FPSAnimator(final GLAutoDrawable drawable, final int fps, final boolean scheduleAtFixedRate)</code></dt><dd>drawableにはGLAutoDrawableのインスタンスを指定します。(以下の捕捉参照)fpsには設定したいフレームレートを、scheduleAtFixedRateには、指定したフレームレートに従い、アニメーションを行うか否かを指定します。(原文は"a flag indicating whether to use fixed-rate scheduling."となっており、true/falseを指定した場合の動作の違いが不明確ですが、trueを指定した場合には、指定されたフレームレートを守ろうと出来るだけ頑張るけど、falseだったらそこまでは頑張らないよ、という意味ですかね？)</dd></dl>
+<dl><dt><code>FPSAnimator(final int fps)</code></dt><dd>fpsには設定したいフレームレートを指定します。</dd></dl>
+<dl><dt><code>FPSAnimator(final int fps, final boolean scheduleAtFixedRate)</code></dt><dd>fpsには設定したいフレームレートを、scheduleAtFixedRateには、指定したフレームレートに従い、アニメーションを行うか否かを指定します。</dd></dl>
+<dl><dt><code>FPSAnimator(final GLAutoDrawable drawable, final int fps)</code></dt><dd>drawableにはGLAutoDrawableのインスタンスを、fpsには設定したいフレームレートを指定します。</dd></dl>
+
+<p>
+FPSAnimatorの全ての引数を持つコンストラクタを使う場合、以下のようにします。GLWindowクラスはGLAutoDrawableインターフェースを実装しているので、GLWindowのインスタンスが指定できます。</p>
+
+<pre  class="source"><code>
+	<em>private final FPSAnimator animator;</em>
+	//（省略)
+	public CubeSample2() {
+		//（省略)
+		glWindow.addMouseListener(this);
+		glWindow.addKeyListener(this);
+		<em>animator = new FPSAnimator(glWindow, 30, true);</em>
+		//次の行をコメントアウトしないと、"IllegalArgumentException: Drawable already added to animator"が投げられる。
+		//animator.add(glWindow);
+		animator.start();
+		animator.pause();
+		glWindow.setVisible(true);
+	}
+</code></pre>
+
+<p>ところで、このプログラムでは、以下のように、図形の中心を、x,y,z共に0.5fだけずらし、回転させてから、元の位置に戻しています。
+このようにしないと、回転の中心が物体の中心と一致しません。</p>
+
+<pre  class="source"><code>// 図形の回転
+<em>gl.glTranslatef(0.5f, 0.5f, 0.5f);//追加</em>
+gl.glRotatef(r, 0.0f, 1.0f, 0.0f);
+<em>gl.glTranslatef(-0.5f, -0.5f, -0.5f);//追加</em>
+</code></pre>
+
+<h3><a  class="label"  id="S7.2">7.2ダブルバッファリング</a></h3>
+<p>グラフィック関係のソフトウェアでは、更新途中の画面を表示することによるちらつきを防ぐため、ダブルバッファリングという技法が使われることがあります。これは画面描画用に二つのバッファを用意し、一方を表示している間に(見えないところで)もう一方に図形を描き、それが完了したらこの二つの画面を入れ換える方法です。JOGLでは、デフォルトでこれを行うように設定されています。</p>
+<p>それでは、CubeSample2.javaでダブルバッファリングを行わないようにしてみましょう。</p>
+<pre  class="source"><code>
+@Override
+public void init(GLAutoDrawable drawable) {
+	GL2 gl = drawable.getGL().getGL2();//背景を白く塗りつぶす
+	gl.glClearColor(1f, 1f, 1f, 1.0f);
+	<em>System.out.println("auto swap:" + drawable.getAutoSwapBufferMode());//追加</em>
+	<em>drawable.setAutoSwapBufferMode(false);//追加</em>
+}</code></pre>
+<p>これを実行しても、ウィンドウの中に何も表示されません。これを表示するようにするには、display()メソッドの最後に以下のように<code>drawable.swapBuffers()</code>を追加する必要があります。</p>
+<pre  class="source"><code>
+@Override
+public void display(GLAutoDrawable drawable) {
+	//省略
+	drawable.swapBuffers(); //追加
+}
+</code></pre>
+<p>これはC/C++版のGLUTの<code>glutSwapBuffers()</code>に相当する機能です。前述のとおり、デフォルトでダブルバッファリングが行われていますので、特別な事情がない限り、setAutoSwapBufferMode(false)でダブルバッファーを使わないように設定する必要はないでしょう。</p>
+
+<h3><a  class="label"  id="S7.3">7.3 Animoatorとスレッドについて</a></h3>
+<p>サンプルコード CubeSample2.javaでは、描画はFPSAnimatorというアニメーション用のクラスから呼ばれたスレッドが担当し、マウス操作については、SwingのEventDispatchThreadに相当する別のスレッドが動いています。<br>
+
+CubeSample2.javaに以下を追加して動かしてみます。</p>
+<pre  class="source"><code>
+@Override
+public void display(GLAutoDrawable drawable) {
+	<em>dumpThread("display"); </em>
+	//他は同じ
+}
+
+@Override
+public void mouseDragged(com.jogamp.newt.event.MouseEvent e) {
+	<em>dumpThread("dragging");</em>
+	//他は同じ
+}
+
+<em>private void dumpThread(String name) {
+	Thread th = Thread.currentThread();
+	System.out.println(name + ":" + th.getName() + ", " + th.getState());
+}</em>
+</code></pre>
+<p>以下の２つのスレッドが動いているのが分かります。OS X(Marvericks)で動かした場合ですので、別のOSでは異なる結果になるはずです。<br>
+前者は何もしなくても常時表示されますが、後者はマウスをドラッグしたときだけ表示されています。</p>
+<pre  class="source"><code>display:main-FPSAWTAnimator#00-Timer0, RUNNABLE (実際にはこれが何度も表示される)
+dragging:main-Display-.macosx_nil-1-EDT-1, RUNNABLE
+</code></pre>
+<p>現時点では、このように別々のスレッドが動いていることを提示するだけにとどめますが、プログラムが複雑になると、自分でスレッドを起動する必要にせまられ、複数のスレッドの相互作用を考慮しないとならない機会もあるかと思います。<br>
+なお、JOGLではSwingWorkerに相当するユーティリティー・クラスが提供されているかどうか、SwingWorkerとJOGLを組み合わせることが出来るかどうかは現時点では未確認です。申し訳ありません。<br>
+</p>
+
+<h2><a  class="label"  id="C8">8.隠面消去処理</a></h2>
+<h3><a  class="label"  id="S8.1">8.1多面体を塗りつぶす</a></h3>
+<p>それでは、次に立方体の面を塗りつぶしてみましょう。面のデータは、稜線とは別に以下のように用意します。</p>
+<pre  class="source"><code>private final int face[][] = {
+	{ 0, 1, 2, 3 }, // A-B-C-D を結ぶ面
+	{ 1, 5, 6, 2 }, // B-F-G-C を結ぶ面
+	{ 5, 4, 7, 6 }, // F-E-H-G を結ぶ面
+	{ 4, 0, 3, 7 }, // E-A-D-H を結ぶ面
+	{ 4, 5, 1, 0 }, // E-F-B-A を結ぶ面
+	{ 3, 2, 6, 7 } // D-C-G-H を結ぶ面
+};
+</code></pre>
+<p>このデータを使って、線を引く代わりに6枚の四角形を描きます。以下の内容の、CubeSample3.javaというファイルを作成してください。</p>
+<pre  class="source"><code>
+package demos.basic;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.glu.GLU;
+import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.newt.event.MouseListener;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.FPSAnimator;
+import static com.jogamp.opengl.GL2.*;
+
+public class CubeSample3 implements GLEventListener, MouseListener {
+
+	
+	public static void main(String[] args) {
+		new CubeSample3();
+	}
+	
+	private final float[][] vertex = {
+	{ 0.0f, 0.0f, 0.0f}, /* A */
+	{ 1.0f, 0.0f, 0.0f}, /* B */
+	{ 1.0f, 1.0f, 0.0f}, /* C */
+	{ 0.0f, 1.0f, 0.0f}, /* D */
+	{ 0.0f, 0.0f, 1.0f}, /* E */
+	{ 1.0f, 0.0f, 1.0f}, /* F */
+	{ 1.0f, 1.0f, 1.0f}, /* G */
+	{ 0.0f, 1.0f, 1.0f} /* H */
+	};
+	
+	private final int face[][] = {
+	{ 0, 1, 2, 3 }, // A-B-C-D を結ぶ面
+	{ 1, 5, 6, 2 }, // B-F-G-C を結ぶ面
+	{ 5, 4, 7, 6 }, // F-E-H-G を結ぶ面
+	{ 4, 0, 3, 7 }, // E-A-D-H を結ぶ面
+	{ 4, 5, 1, 0 }, // E-F-B-A を結ぶ面
+	{ 3, 2, 6, 7 } // D-C-G-H を結ぶ面
+	};
+	
+	
+	private final GLU glu;
+	
+	private final FPSAnimator animator;
+	
+	private boolean willAnimatorPause = false;
+	
+	//回転角
+	float r = 0;
+	
+	public CubeSample3() {
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+		glu = new GLU();
+		GLWindow glWindow = GLWindow.create(caps);
+		glWindow.setTitle("Cube demo (Newt)");
+		glWindow.setSize(300, 300);
+		glWindow.addWindowListener(new WindowAdapter() {
+			
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				System.exit(0);
+			}
+		});
+		
+		glWindow.addGLEventListener(this);
+		glWindow.addMouseListener(this);
+		animator = new FPSAnimator(30);
+		animator.add(glWindow);
+		animator.start();
+		animator.pause();
+		glWindow.setVisible(true);
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		//背景を白く塗りつぶす.
+		gl.glClearColor(1f, 1f, 1f, 1.0f);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glMatrixMode(GL_PROJECTION);
+		gl.glLoadIdentity();
+		glu.gluPerspective(30.0, (double)width / (double)height, 1.0, 300.0);
+		glu.gluLookAt(3.0f, 4.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		gl.glMatrixMode(GL_MODELVIEW);
+	}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL_COLOR_BUFFER_BIT);
+		
+		gl.glLoadIdentity();
+		
+		// 図形の回転
+		gl.glTranslatef(0.5f, 0.5f, 0.5f);
+		gl.glRotatef(r, 0.0f, 1.0f, 0.0f);
+		gl.glTranslatef(-0.5f, -0.5f, -0.5f);
+		// 図形の描画
+		gl.glColor3f(0.0f, 0.0f, 0.0f);
+		gl.glBegin(GL_QUADS);
+		for (int j = 0; j < 6; ++j) {
+			for (int i = 0; i < 4; ++i) {
+				gl.glVertex3fv(vertex[face[j][i]], 0);
+			}
+		}
+		gl.glEnd();
+		
+		//一周回ったら回転角を 0 に戻す
+		if (r++ >= 360.0f) r = 0;
+		System.out.println("anim:" + animator.isAnimating() + ", r:" + r);
+		if(willAnimatorPause) {
+			animator.pause();
+			System.out.println("animoator paused:");
+			willAnimatorPause = false;
+		}
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) { }
+	
+	@Override
+	public void mouseEntered(MouseEvent e) { }
+	
+	@Override
+	public void mouseExited(MouseEvent e) {}
+	
+	@Override
+	public void mousePressed(MouseEvent e) {
+		switch(e.getButton()) {
+			case MouseEvent.BUTTON1:
+			animator.resume();
+			System.out.println("button 1, left click");
+			break;
+			case MouseEvent.BUTTON2:
+			System.out.println("button 2");
+			break;
+			case MouseEvent.BUTTON3:
+			System.out.println("button 3, right click");
+			willAnimatorPause = true;
+			animator.resume();
+			break;
+		}
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		animator.pause();
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e) { }
+	
+	@Override
+	public void mouseDragged(MouseEvent e) {}
+	
+	@Override
+	public void mouseWheelMoved(MouseEvent e) {}
+}
+</code></pre>
+<p>これを実行すると次のようになります。真っ黒で何もわかりません。<br>
+<img  alt=""  src="cubeSample0.png"  height="436"  width="414"></p>
+<p>面ごとに色を変えてみましょう。色のデータは以下のように作ってみます。</p>
+<pre  class="source"><code>private final float color[][] = {
+{ 1.0f, 0.0f, 0.0f }, // 赤
+{ 0.0f, 1.0f, 0.0f }, // 緑
+{ 0.0f, 0.0f, 1.0f }, // 青
+{ 1.0f, 1.0f, 0.0f }, // 黄
+{ 1.0f, 0.0f, 1.0f }, // マゼンタ
+{ 0.0f, 1.0f, 1.0f } // シアン
+};
+</code></pre>
+<p>一つの面を描く度に、この色を設定してやります。display()メソッドを以下のように修正します。</p>
+<pre  class="source"><code>@Override
+public void display(GLAutoDrawable drawable) {
+	// 図形の描画
+	<em> //gl.glColor3f(0.0f, 0.0f, 0.0f);// コメントアウト</em>
+	gl.glBegin(GL_QUADS);
+	for (int j = 0; j < 6; ++j) {
+		<em>gl.glColor3fv(color[j], 0); //追加</em>
+		for (int i = 0; i < 4; ++i) {
+			gl.glVertex3fv(vertex[face[j][i]], 0);
+		}
+	}
+	gl.glEnd();
+}</code></pre>
+<dl><dt><code><a  class="label"  id="GLCOLOR3FV">void glColor3fv(float[]v,intoffset)</a></code></dt><dd>glColor3fv()はglColor3f()と同様にこれから描画するものの色を指定します。引数vは三つの要素を持ったfloat型の配列で、v[0]には赤(R)、v[1]には緑(G)、v[2]には青(B)の強さを、0以上1以下の範囲で指定します。offsetには0を指定します。</dd></dl>
+<p>でもこれだとなんか変な表示になるかもしれません。<br>
+<img  alt=""  src="CubeSample3.png"  height="436"  width="414">
+<br>前のプログラムではデータの順番で面を描いていますから、先に描いたものが後に描いたもので塗りつぶされてしまいます。ちゃんとした立体を描くには<em>隠面消去処理</em>を行う必要があります。</p>
+<h3><a  class="label"  id="S8.2">8.2デプスバッファを使う</a></h3>
+<p>隠面消去処理を行なうには、glEnable(GL_DEPTH_TEST)を実行します。こうすると、描画のときにデプスバッファを使うようになります。このため、画面(フレームバッファ、カラーバッファ)を消去するときにデプスバッファも一緒に消去しておきます。それにはglClear()の引数にGL_DEPTH_BUFFER_BITを追加します。</p><p>デプスバッファを使うと、使わないときより処理速度が低下します。そこで、必要なときだけデプスバッファを使うようにします。デプスバッファを使う処理の前でglEnable(GL_DEPTH_TEST)を実行し、使い終わったらglDisable(GL_DEPTH_TEST)を実行します。<code>このプログラムでは常にデプスバッファを使うので、init()の中でglEnable(GL_DEPTH_TEST)を一度だけ実行し、glDisable(GL_DEPTH_TEST)の実行を省略しています。<br></code></p><p><code>CubeSample3.javaを以下のように修正します。<br></code></p>
+<pre  class="source"><code>@Override
+public void init(GLAutoDrawable drawable) {
+GL2 gl = drawable.getGL().getGL2();
+	//背景を白く塗りつぶす
+	gl.glClearColor(1f, 1f, 1f, 1.0f);
+	<em>gl.glEnable(GL_DEPTH_TEST);//追加</em>
+}
+@Override
+public void display(GLAutoDrawable drawable) {
+	GL2 gl = drawable.getGL().getGL2();
+	<em> gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //GL_DEPTH_BUFFER_BITを追加</em>
+	//(省略)
+}</code></pre>
+<p>以下のように正常に表示されるようになりました。<br>
+<img  alt=""  src="CubeSample4.png"  height="436"  width="414"></p>
+<h3><a  class="label"  id="S8.3">8.３カリング</a></h3>
+<p>立方体のように閉じた立体の場合、裏側にある面、すなわち視点に対して背を向けている面は見ることはできません。そういう面をあらかじめ取り除いておくことで、隠面消去処理の効率を上げることができます。</p><p>視点に対して背を向けている面を表示しないようにするにはglCullFace(GL_BACK)、表を向いている面を表示しないようにするにはglCullFace(GL_FRONT)、両方とも表示しないようにするにはglCullFace(GL_FRONT_AND_BACK)を実行します。ただし、この状態でも点や線などは描画されます。</p><p>また、glCullFace()を有効にするにはglEnable(GL_CULL_FACE)、無効にするにはglDisable(GL_CULL_FACE)を実行します。サンプルプログラムを以下のように変えてみてください。</p>
+<pre  class="source"><code>@Override
+public void init(GLAutoDrawable drawable) {
+	GL2 gl = drawable.getGL().getGL2();
+	//背景を白く塗りつぶす.
+	gl.glClearColor(1f, 1f, 1f, 1.0f);
+	gl.glEnable(GL_DEPTH_TEST);
+	gl.glEnable(GL_CULL_FACE);//追加
+	gl.glCullFace(GL_BACK);//追加
+}
+</code></pre>
+<p>このプログラムも、多分妙な表示になります。裏側の面を表示しないはずなのに、実際は表側の面が削除されています。実は、面の表裏は頂点をたどる順番で決定しています。配列face[]ではこれを右回り(時計回り)で結んでいます。ところがOpenGLでは、標準では視点から見て頂点が左回りになっているとき、その面を表として扱います。試しにglCullFace(GL_FRONT)としてみてください。あるいは、face[]において頂点を右回りにたどるようにしてみてください。</p><p>なお、頂点が右回りになっているときを表として扱いたいときは、glFrontFace(GL_CW)を実行します。左回りに戻すにはglFrontFace(GL_CCW)を実行します。</p><p>一般にカリングはクリッピングや隠面消去処理の効率を上げるために、視野外にある図形など見えないことが分かっているものを事前に取り除いておいて、隠面消去処理(可視判定)の対象から外しておくことを言います。これには様々な方法が存在しますが、glCullFace()による方法(背面ポリゴンの除去)は、そのもっとも基本的なものです。</p>
+<h2><a  class="label"  id="C9">9.陰影付け</a></h2>
+
+<h3><a  class="label"  id="S9.1">9.1光を当ててみる</a></h3>
+<p>次は面ごとに色を付けるかわりに、光を当ててみましょう。この場合、glColor()で指定した物体の表面の色は使われず、代わりに光が照らす方向と、表面での光の反射方向に従い、表面の陰影が計算されます。（実際は表面の色も使われますが、後で説明します）</p><p>この計算を行うためには、面ごとの色の代わりに法線ベクトルを与えます。</p><pre
+ class="source"><code>private final float normal[][] = {
+{ 0.0f, 0.0f, -1.0f},
+{ 1.0f, 0.0f, 0.0f},
+{ 0.0f, 0.0f, 1.0f},
+{-1.0f, 0.0f, 0.0f},
+{ 0.0f, -1.0f, 0.0f},
+{ 0.0f, 1.0f, 0.0f}
+};
+</code></pre>
+<p>また、glColor3fv()のかわりにglNormal3fv()を使います。</p><pre  class="source"><code>@Override
+public void init(GLAutoDrawable drawable) {
+	GL2 gl = drawable.getGL().getGL2();
+	//背景を白く塗りつぶす.
+	gl.glClearColor(1f, 1f, 1f, 1.0f);
+	gl.glEnable(GL_DEPTH_TEST);
+	gl.glEnable(GL_CULL_FACE);
+	<em>gl.glCullFace(GL_FRONT);//GL_BACKから変更</em>
+	gl.glEnable(GL_LIGHTING);//追加
+	gl.glEnable(GL_LIGHT0);//追加
+	gl.glEnable(GL_LIGHT1);//追加
+}
+@Override
+public void display(GLAutoDrawable drawable) {
+	//省略
+	gl.glBegin(GL_QUADS);
+	for (int j = 0; j < 6; ++j) {
+		//<em>gl.glColor3fv(color[j], 0);//コメントアウト</em>
+		<em>gl.glNormal3fv(normal[j], 0);//追加</em>
+		for (int i = 0; i < 4; ++i) {
+			gl.glVertex3fv(vertex[face[j][i]], 0);
+		}
+	}
+	gl.glEnd();
+	//省略
+}
+</code></pre>
+<p>これを実行すると次のようになります。<br><img  alt=""  src="CubeSample5.png"  height="436"  width="414"><br>
+ところで、上記で、法線ベクトルを与えたのはどうしてなのでしょうか？物体の表面の明るさは、光の方向と、法線の向きの間の角度によって決まると言われています。具体的には、この角度をθとすると、cosθに比例する明るさとなります。<br>
+<img  src="light_reflect.png"  alt="光源からの光線が反射する様子"  height="300"  width="440"><br>光の方向と、法線をベクトルで表しているので、以下のように、ベクトルの内積を計算すればよいことになります。<br>
+<img  alt="ベクトルの内積"  src="vector_dot.png"  height="234"  width="275"></p>
+<p>ベクトルの内積(ドット積とも呼ばれる)とは、２つのベクトルa(a<sub>x</sub>,a<sub>y</sub>,a<sub>z</sub>)とb(b<sub>x</sub>,b<sub>y</sub>,b<sub>z</sub>)があったとき、以下の式で表されるスカラー量です。</p>
+<code  class="source">a⋅b = a<sub>x</sub>b<sub>x</sub> + a<sub>y</sub>b<sub>y</sub> + a<sub>z</sub>b<sub>z</sub></code>
+<p>この値は、aとbの間の角度をθとすると、</p>
+<pre  class="source"><code>a⋅b = |a||b|cosθ</code></pre>
+<p>とも等しくなります。従って、以下の式で明るさのスケールが求められます。</p>
+<!-- LibreOffice 数式エディタで作成 ソースはdot.odf -->
+<pre  class="source"><math  display="block">
+ <semantics>
+  <mrow>
+   <mi  mathvariant="italic">cosθ</mi>
+   <mo  stretchy="false">=</mo>
+   <mfrac>
+    <mrow>
+     <mi>a</mi>
+     <mo  stretchy="false">⋅</mo>
+     <mi>b</mi>
+    </mrow>
+    <mrow>
+     <mrow>
+      <mo  fence="true"  stretchy="false">|</mo>
+      <mrow>
+       <mi>a</mi>
+      </mrow>
+      <mo  fence="true"  stretchy="false">|</mo>
+     </mrow>
+     <mrow>
+      <mo  fence="true"  stretchy="false">|</mo>
+      <mrow>
+       <mi>b</mi>
+      </mrow>
+      <mo  fence="true"  stretchy="false">|</mo>
+     </mrow>
+    </mrow>
+   </mfrac>
+   <mo  stretchy="false">=</mo>
+   <mfrac>
+    <mrow>
+     <msub>
+      <mi>a</mi>
+      <mi>x</mi>
+     </msub>
+     <mrow>
+      <msub>
+       <mi>b</mi>
+       <mi>x</mi>
+      </msub>
+      <mo  stretchy="false">+</mo>
+      <msub>
+       <mi>a</mi>
+       <mi>y</mi>
+      </msub>
+     </mrow>
+     <mrow>
+      <msub>
+       <mi>b</mi>
+       <mi>y</mi>
+      </msub>
+      <mo  stretchy="false">+</mo>
+      <msub>
+       <mi>a</mi>
+       <mi>z</mi>
+      </msub>
+     </mrow>
+     <msub>
+      <mi>b</mi>
+      <mi>z</mi>
+     </msub>
+    </mrow>
+    <msqrt>
+     <mrow>
+      <mrow>
+       <mo  fence="true"  stretchy="false">(</mo>
+       <mrow>
+        <mrow>
+         <msubsup>
+          <mi>a</mi>
+          <mi>x</mi>
+          <mn>2</mn>
+         </msubsup>
+         <mo  stretchy="false">+</mo>
+         <msubsup>
+          <mi>a</mi>
+          <mi>y</mi>
+          <mn>2</mn>
+         </msubsup>
+         <mo  stretchy="false">+</mo>
+         <msubsup>
+          <mi>a</mi>
+          <mi>z</mi>
+          <mn>2</mn>
+         </msubsup>
+        </mrow>
+       </mrow>
+       <mo  fence="true"  stretchy="false">)</mo>
+      </mrow>
+      <mrow>
+       <mo  fence="true"  stretchy="false">(</mo>
+       <mrow>
+        <mrow>
+         <msubsup>
+          <mi>b</mi>
+          <mi>x</mi>
+          <mn>2</mn>
+         </msubsup>
+         <mo  stretchy="false">+</mo>
+         <msubsup>
+          <mi>b</mi>
+          <mi>y</mi>
+          <mn>2</mn>
+         </msubsup>
+         <mo  stretchy="false">+</mo>
+         <msubsup>
+          <mi>b</mi>
+          <mi>z</mi>
+          <mn>2</mn>
+         </msubsup>
+        </mrow>
+       </mrow>
+       <mo  fence="true"  stretchy="false">)</mo>
+      </mrow>
+     </mrow>
+    </msqrt>
+   </mfrac>
+  </mrow>
+  <annotation  encoding="StarMath 5.0">
+cosθ = {a cdot b} over { lline a rline lline b rline}
+
+=  {a_x b_x + a_y b_y + a_z b_z} over sqrt{(a_x^2+a_y^2+a_z^2)(b_x^2+b_y^2+b_z^2)}</annotation>
+ </semantics>
+</math>
+</pre>
+
+<p>aとbをあらかじめ正規化（絶対値を１とする）しておけば、内積を計算するだけでcosθが求められます。</p>
+<p>ここで、前述のコードの一部を、以下のように変えて実行してみてください。</p>
+<pre  class="source"><code> // 図形の描画
+gl.glBegin(GL_QUADS);
+for (int j = 0; j < 6; ++j) {
+	//gl.glNormal3fv(normal[j], 0);//コメントアウト
+	for (int i = 0; i < 4; ++i) {
+		gl.glNormal3fv(vertex[face[j][i]], 0);//追加
+		gl.glVertex3fv(vertex[face[j][i]], 0);
+	}
+}
+gl.glEnd();
+</code></pre>
+<p>これにより各頂点での法線ベクトルは、立方体の中心から各頂点へ延びる線分になります。<br>左が変更前、右が変更後です。頂点が不明瞭になっていることが分かると思いますが、これはさいころのような形だと、さいころの各面に垂直な法線ベクトルを使うべきであるためです。<br><img
+ alt=""
+ src="CubeSample5.png"
+ height="436"
+ width="414"><img
+ alt=""
+ src="CubeSample6InvalidNormal.png"
+ height="436"
+ width="414"></p>
+<p>プログラムを元に戻しておいてください。</p>
+
+<h3><a  class="label"  id="S9.2">9.2光源を設定する</a></h3>
+
+<p>ここまでで表示した結果は、上面と側面がほぼ同じような黒さで、まだ立体感があるとはとうてい言えないような状態となっています。そこで、光源を設定して見栄えをよくしてみましょう。OpenGLには、最初からいくつかの光源が用意されています。いくつの光源が用意されているかはシステムによって異なりますが、仕様上8個までは必ず用意することになっています。この数は以下のようにして問い合わせることができます。</p>
+<pre  class="source"><code>int[] maxLights = new int[1];
+gl.glGetIntegerv(GL2.GL_MAX_LIGHTS, maxLights, 0);
+System.out.println(maxLights[0]);
+</code></pre>
+<p>0番目の光源(GL_LIGHT0)を有効にする(点灯する)にはglEnable(GL_LIGHT0)、無効にする(消灯する)にはglDisable(GL_LIGHT0)を実行します。<br>陰影付けを行うと、陰影付けを行わないより処理速度は低下します。陰影付けを有効にするにはglEnable(GL_LIGHTING)、無効にするにはglDisable(GL_LIGHTING)を実行します。</p>
+<p>なお、陰影付けが有効になっているときは、glColor3f()などによる色指定は無視されます。glColor3f()などで色を付けたいときは、一旦<code>glDisable(GL_LIGHTING)</code>を実行して陰影付けを行わないようにする必要があります。一方、上のプログラムのように常に陰影付けを行う場合や、光源を点灯したままにしておく場合は、<a
+ href="#S8.2">glEnable(GL_DEPTH_TEST)</a>同様、<code>glEnable(GL_LIGHTING)</code>や<code>glEnable(GL_LIGHT<em>n</em>)</code>をinit()の中で一度実行するだけで十分です。また、このときは<code>glDisable(GL_LIGHTING)</code>や<code>glDisable(GL_LIGHT<em>n</em>)</code>を実行する必要はありません。</p>
+
+<p>それでは光源を二つにして、それぞれの位置と色を変えてみましょう。最初の光源(GL_LIGHT0)の位置をZ軸方向の斜め上(0,3,5)に、二つ目の光源(GL_LIGHT1)をx軸方向の斜め上(5,3,0)に置き、二つ目の光源の色を緑(0,1,0)にします。これらのデータはいずれも四つの要素を持つfloat型の配列に格納します。四つ目の要素は1にしておいてください。</p>
+<pre  class="source"><code>private final float[] light0pos = {0.0f, 3.0f, 5.0f, 1.0f};
+private final float[] light1pos = {5.0f, 3.0f, 0.0f, 1.0f};
+private final float[] green = {0.0f, 1.0f, 0.0f, 1.0f};
+</code></pre>
+<p>これらをglLightfv()を使ってそれぞれの光源に設定します。サンプルプログラムを以下のように変更してください。</p>
+<pre  class="source"><code>
+private final float[] light0pos = {0.0f, 3.0f, 5.0f, 1.0f};//追加
+private final float[] light1pos = {5.0f, 3.0f, 0.0f, 1.0f};//追加
+private final float[] green = {0.0f, 1.0f, 0.0f, 1.0f};//追加
+@Override
+public void init(GLAutoDrawable drawable) {
+	GL2 gl = drawable.getGL().getGL2();
+	//背景を白く塗りつぶす.
+	gl.glClearColor(1f, 1f, 1f, 1.0f);
+	gl.glEnable(GL_DEPTH_TEST);
+	gl.glEnable(GL_CULL_FACE);
+	gl.glCullFace(GL_FRONT);
+	gl.glEnable(GL_LIGHTING);
+	gl.glEnable(GL_LIGHT0);
+	gl.glEnable(GL_LIGHT1);
+	gl.glLightfv(GL_LIGHT1, GL_DIFFUSE, green, 0);//追加
+	gl.glLightfv(GL_LIGHT1, GL_SPECULAR, green, 0);//追加
+}
+@Override
+public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+	GL2 gl = drawable.getGL().getGL2();
+	gl.glMatrixMode(GL_PROJECTION);
+	gl.glLoadIdentity();
+	glu.gluPerspective(30.0, (double)width / (double)height, 1.0, 300.0);
+	
+	//視点位置と視線方向
+	//glu.gluLookAt(3.0f, 4.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);//コメントアウト
+	
+	gl.glMatrixMode(GL_MODELVIEW);
+}
+@Override
+public void display(GLAutoDrawable drawable) {
+	GL2 gl = drawable.getGL().getGL2();
+	gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //GL_DEPTH_BUFFER_BITを追加
+	gl.glLoadIdentity();
+	glu.gluLookAt(3.0f, 4.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);//追加
+	
+	// 光源の位置設定
+	gl.glLightfv(GL_LIGHT0, GL_POSITION, light0pos, 0);//追加
+	gl.glLightfv(GL_LIGHT1, GL_POSITION, light1pos, 0);//追加
+	//以降省略
+}
+</code></pre>
+<dl><dt><code>void glLightfv(intlight、intpname、float[]params)</code></dt><dd>光源のパラメータを設定します。最初の引数lightには設定する光源の番号(GL_LIGHT0～GL_LIGHT<em>n</em>、<em>n</em>はシステムによって異なります)です。二つ目の引数pnameは設定するパラメータの種類です。最後の引数paramsは、pnameに指定したパラメータの種類に設定する値です。</dd><dd>pnameとparamsに指定するパラメータの組み合わせの一部を以下の表に示します。</dd></dl>
+<table  summary="光源の種類とパラメータ"  border="1"  cellpadding="2"  cellspacing="2"  width="80%"><tbody><tr><td
+ valign="top"><code>pname</code></td><td
+ valign="top">params</td></tr><tr><td
+ valign="top">GL_POSITION</td><td
+ valign="top"><code>光源の位置を設定。x,y,z,wの4要素。wが0なら光源からの指向性のある平行光線(例：太陽光)で、0以外なら点光源(例：スポットライト、街灯)<br>点光源の場合、光源からの距離に応じてどのように減衰するかを設定できる。<br></code></td></tr><tr><td
+ valign="top">GL_DIFFUSE</td><td
+ valign="top"><code>拡散光(特定の方向からの面光源。ワールド内の物体の、光源に面している側だけが照らされる)</code>の色を設定する。r,g,bの3要素+4番目の固定値1。</td></tr><tr><td
+ valign="top">GL_SPECULAR</td><td
+ valign="top">鏡面<code>光(特定の方向からの光束。物体の一部だけを照らす)</code>の色を設定する。r,g,bの3要素+4番目の固定値1。</td></tr><tr><td
+ valign="top">GL_AMBIENT</td><td
+ valign="top">環境光(ワールド内を均一に照らす、どこから照らされているかわからないような光)の色を設定する。r,g,bの3要素+4番目の固定値1。</td></tr></tbody></table>
+<p>なお、上記のr,g,bの3要素にはint型、float型、double型を指定できます。</p>
+<p>上の表で拡散光、鏡面光、環境光の３つを挙げたのは、CGでは、この３つの光源を使うことにより、現実世界での光を近似できると言われているからのようです。</p>
+
+<p>陰影付けの計算はワールド座標系で行われるので、glLightfv()による光源の位置(GL_POSITION)の設定は、<strong>視点の位置を設定した後に行う</strong>必要があります。また、上のプログラムのglRotate3d()より後でこれを設定すると、光源もいっしょに回転してしまいます。</p>
+<ul><li><a  href="#VIEWPIPE">座標変換のプロセス</a>は"モデリング変換→ビューイング変換→透視変換→・・・"という順に行われると書きましたが、プログラムのコーディング上は、これらの設定が<strong>逆順になる</strong>ことに注意してください。<ol><li>glLoadIdentity()でモデルビュー変換行列を初期化</li><li>gluLookAt()等でビューイング変換を設定</li>
+<li>glTranslated()やglRotated()等でモデリング変換を設定</li><li>glBegin()～glEnd()等による描画</li></ol></li>
+<li>1-2の間で光源の位置を設定した場合は、光源は視点と一緒に移動します。このとき、光源の方向を(0、0、-1、0)、すなわちZ軸の負の方向に設定すれば、自動車のヘッドライトのような効果を得ることができます。</li><li>2-3の間で光源の位置を設定した場合は、光源の位置は視点や図形の位置によらず固定になります。通常はここで光源の位置を設定します。</li><li>3-4の間で光源の位置を設定した場合は、光源の位置は図形と一緒に移動します。</li></ul><p>glLightfv()による光源の色の設定(GL_DIFFUSE等)は、必ずしもdisplay()内に置く必要はありません。プログラムの実行中に光源の色を変更しないなら、<a
+ href="#S8.2">glEnable(GL_DEPTH_TEST)</a>や<a
+ href="#S9.1">glEnable(GL_LIGHTING)</a>同様init()の中で一度実行すれば十分です。</p>
+<p>glLightf*()で設定可能なパラメータは、GL_POSITIONやGL_DIFFUSE以外にもたくさんあります。光源を方向を持ったスポットライトとし、その方向や広がり、減衰率なども設定することもできます。詳しくは<a
+ href="http://wisdom.sakura.ne.jp/system/opengl/gl16.html">http://wisdom.sakura.ne.jp/system/opengl/gl16.html</a>に詳しく解説されていますので、参考としてください。</p>
+<h3><a  class="label"  id="S9.3">9.3材質を設定する</a></h3>
+<p>前の例では図形に色を付けていませんでしたから、立方体はデフォルトの色(白)で表示されたと思います。今度はこの色を変えてみましょう。この場合も光源の時と同様に四つの要素を持つGLfloat型の配列を用意し、個々の要素に色をR、G、BそれにAの順に格納します。四つ目の要素(A)は、ここではとりあえず1にしておいてください。</p><pre
+ class="source"><code>private final float[] red = {0.8f, 0.2f, 0.2f, 1.0f};
+</code></pre><p>glColor*()で色を付けるときと同様、図形を描く前にglMaterialfv()を使ってこの色を図形の色に指定します。サンプルプログラムを以下のように変更してください。</p>
+<pre  class="source"><code> <em>private final float[] red = {0.8f, 0.2f, 0.2f, 1.0f};
+//追加</em><br>
+@Override<br> public void display(GLAutoDrawable drawable) {
+	//ここまで省略
+	// 図形の回転
+	gl.glTranslatef(0.5f, 0.5f, 0.5f);
+	gl.glRotatef(r, 0.0f, 1.0f, 0.0f);
+	gl.glTranslatef(-0.5f, -0.5f, -0.5f);
+	// 図形の色 (赤)
+	<em>gl.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, red, 0);//追加</em>
+	// 図形の描画
+	gl.glBegin(GL_QUADS);
+	//以降省略
+}</code></pre>
+<p>これを実行すると、次のように赤くなりました。<br><img  alt=""  src="CubeSample6.png"  height="436"  width="414"></p>
+<dl><dt><code>void glMaterialfv(int face、int pname、float[] params,int offset)</code></dt><dd>glMaterialfv()は図形の材質パラメータを設定します。引数faceにはGL_FRONT、GL_BACKあるいはGL_FRONT_AND_BACKが指定でき、それぞれ面の表、裏、あるいは両面に材質パラメータを設定します。設定できる材質pnameにはGL_AMBIENT(環境光に対する反射係数)、GL_DIFFUSE(拡散反射係数)、GL_SPECULAR(鏡面反射係数)、GL_EMISSION(発光係数)、GL_SHININESS(ハイライトの輝き)、あるいはGL_AMBIENT_AND_DIFFUSE(拡散反射係数と鏡面反射係数の両方)があります。他にインデックスカラーモード(GLUT_INDEX)であればGL_COLOR_INDEXESも使用できますが、この資料では使用していません。引数paramsは一つまたは四つの要素を持つfloat型の配列で、四つの要素を持つ場合(GL_SHININESS、GL_COLOR_INDEXES以外)は、色の成分RGBおよび透明度Aに対する係数を指定します。この初期値は(0.8f,0.8f,0.8f,1.0f)ですが、1を越える値も設定できます。offset(JOGLで追加された引数)は0を指定します。</dd><dt>void glMaterialfv(int face,int pname, FloatBuffer params)</dt><dd>3つめの引数がFloatBufferである点以外は、float配列を引数とするメソッドと同じです。なお、こちらの場合４つめのoffsetは不要です。</dd></dl>
+<p>図形に色を付けるということは、図形の物理的な材質パラメータを設定することに他なりません。<strong>GL_DIFFUSEで設定する拡散反射係数が図形の色</strong>に相当します。GL_AMBIENTは環境光(光源以外からの光)に対する反射係数で、光の当たらない部分の明るさに影響を与えます。GL_DIFFUSEとGL_AMBIENTには同じ値を設定することが多いので、これらを同時に設定するGL_AMBIENT_AND_DIFFUSEが用意されています。</p>
+<p>GL_SPECULARは光源に対する鏡面反射係数で、図形表面の光源の映り込み(ハイライト)の強さです。GL_SHININESSはこの鏡面反射の細さを示し、大きいほどハイライトの部分が小さくなります。この材質パラメータの要素は一つだけなので、glMaterialf()を使って設定することもできます。</p>
+<p>GL_DIFFUSE以外のパラメータを設定することによって、図形の質感を制御できます。たとえばGL_SPECULAR(鏡面反射係数)を白(1111)に設定してGL_SHININESSを大きく(10～40とか／最大128)すればつややかなプラスチックのようになりますし、GL_SPECULAR(鏡面反射係数)をGL_DIFFUSEと同じにしてGL_AMBIENTを0に近づければ金属的な質感になります。ただしGL_SPECULARやGL_AMBIENTを操作するときは、glLightfv()で光源のこれらのパラメータも設定してやる必要があります。</p>
+
+<h2><a  class="label"  id="C10">10.階層構造</a></h2>
+
+<p>次に図形の階層構造を表現してみます。ここでの階層構造とは、例えばロボットの体のように、胴体や手足などが、肩や肘、手首などの複数の関節で繋がれている構造のことです。このような構造では、手は手首の動きに追従して動き、肘から先は肘の動きに追従し、さらに二の腕は肩の動きに追従するというように、連鎖的な構造になっています。</p>
+<p>ここでは、手のひらと指を例として階層化してみます。</p>
+<p>FingersSampleNewt.java、Palm.java、Finger.javaいうファイルを、それぞれ以下の内容で作成してください。</p>
+<pre  class="source"><code>
+package demos.fingers;
+
+import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
+import java.nio.IntBuffer;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.KeyAdapter;
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseAdapter;
+import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.Animator;
+
+public class FingersSampleNewt implements GLEventListener {
+	protected GLCapabilities caps;
+	private final Animator animator;
+	
+	private float viewScale = 0.04f;
+	private int prevMouseX = -1;
+	
+	// フィンガー
+	private static final int FINGERS_COUNT = 3*5;
+	private static Finger[] fingers;
+	private Palm palm;
+	private int fingerNumber = 1;
+	
+	private final float[] red = {1f, 0f, 0f};
+	private final float[] green = {0f, 1f, 0f};
+	private final float[] blue = {0f, 0f, 1f};
+	private final float[] orange = {1f, 0f, 1f};
+	
+	public static void main(String[] args) {
+		System.out.println("指をドラッグして角度を変えられます。第一関節(指先)を操作するにはコントロールキーを、第二関節を操作するにはシフトキーを押しながらドラッグしてください。");
+		System.out.println("操作する指を変えるには、１(小指)から5(親指)を押してください。");
+		new FingersSampleNewt();
+	}
+	
+	public FingersSampleNewt() {
+		GLProfile prof = GLProfile.get(GLProfile.GL2);
+		caps = new GLCapabilities(prof);
+		
+		setupFingers();
+		
+		GLWindow glWindow = GLWindow.create(caps);
+		glWindow.setTitle("Finger demo (Newt)");
+		glWindow.setSize(500, 500);
+		glWindow.addGLEventListener(this);
+		
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				quit();
+			}
+		});
+		
+		glWindow.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				prevMouseX = -1;
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent evt) {
+				int x = evt.getX() ;
+				if(prevMouseX != -1) {
+					float rotDelta = (prevMouseX - x);
+					int fingerIndex = (fingerNumber -1) * 3;
+					if(evt.isControlDown()) {
+						fingers[2 + fingerIndex].updateRotation(rotDelta);
+					} else if(evt.isShiftDown()) {
+						fingers[1 + fingerIndex].updateRotation(rotDelta);
+					} else {
+						fingers[0 + fingerIndex].updateRotation(rotDelta);
+					}
+				}
+				// 現在のマウスの位置を保存
+				prevMouseX = x;
+			}
+			
+			@Override
+			public void mouseWheelMoved(MouseEvent e) {
+				float[] rot = e.getRotation();
+				viewScale *= (rot[1] > 0 ? 1.005f : 0.995f);
+			}
+		});
+		
+		glWindow.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent key) {
+				switch (key.getKeyChar()) {
+					case KeyEvent.VK_ESCAPE:
+					quit();
+					break;
+					
+					case 'q':
+					quit();
+					break;
+					case '1':
+					fingerNumber = 1;
+					System.out.println("1:小指");
+					break;
+					case '2':
+					fingerNumber = 2;
+					System.out.println("2:薬指");
+					break;
+					case '3':
+					fingerNumber = 3;
+					System.out.println("3:中指");
+					break;
+					case '4':
+					fingerNumber = 4;
+					System.out.println("4:人差し指");
+					break;
+					case '5':
+					fingerNumber = 5;
+					System.out.println("5:親指");
+					break;
+					default:
+					break;
+				}
+			}
+		});
+		
+		glWindow.setVisible(true);
+		animator = new Animator(glWindow);
+		animator.start();
+	}
+	
+	private void setupFingers() {
+		fingers = new Finger[FINGERS_COUNT];
+		
+		palm = new Palm(10, 0, -20, orange);
+		
+		//positionは指の根元の場合に使う。二番目以降については
+		//親のアンカーの位置に合わせる。
+		
+		// 小指の設定
+		fingers[0] = new Finger(-9.0f, 10f, 7f, 0f, red);
+		fingers[1] = new Finger(fingers[0], 7f, 0f, blue);
+		fingers[2] = new Finger(fingers[1], 5f, 0f, green);
+		
+		// 薬指の設定
+		fingers[3] = new Finger(-4.5f, 10f, 8f, 0f, red);
+		fingers[4] = new Finger(fingers[3], 8f, 0f, blue);
+		fingers[5] = new Finger(fingers[4], 7f, 0f, green);
+		
+		//中指の設定
+		fingers[6] = new Finger(0.0f, 10f, 9f, 0f, red);
+		fingers[7] = new Finger(fingers[6], 9f, 0f, blue);
+		fingers[8] = new Finger(fingers[7], 8f, 0f, green);
+		
+		// 人差し指の設定
+		fingers[9] = new Finger(4.5f, 10f, 7f, 0f, red);
+		fingers[10] = new Finger(fingers[9], 7f, 0f, blue);
+		fingers[11] = new Finger(fingers[10], 9f, 0f, green);
+		
+		// 親指の設定
+		fingers[12] = new Finger(9.0f, 7f, 6f, 0f, red);
+		fingers[13] = new Finger(fingers[12], 6f, 0f, blue);
+		fingers[14] = new Finger(fingers[13], 5f, 0f, green);
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl2 = drawable.getGL().getGL2();
+		gl2.glClearColor(1f, 1f, 1f, 1f);
+		gl2.glClearDepth(1.0f);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl2 = drawable.getGL().getGL2();
+		gl2.glClear(GL_COLOR_BUFFER_BIT);
+		gl2.glLoadIdentity();
+		gl2.glScalef(viewScale, viewScale, viewScale); //(1)
+		
+		//手のひらを描く
+		palm.render(gl2);
+		
+		//指を描く
+		for (int i = 0; i < FINGERS_COUNT; i++) {
+			fingers[i].render(gl2);
+		}
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+	
+	private void quit() {
+		animator.stop();
+		System.exit(0);
+	}
+}
+</code></pre>
+
+<pre  class="source"><code>
+package demos.fingers;
+
+import com.jogamp.opengl.GL2;
+
+public class Palm {
+	private static final float[][] palmVertex = {{-1f, 0f}, {+1f, 0f}, {+1f, 1f}, {-1f, 1f}};
+	
+	private final float positionX;
+	private final float positionY;
+	private final float size;
+	private final float[] color;
+	
+	public Palm(float size, int x, int y, float[] color) {
+		this.size = size;
+		this.positionX = x;
+		this.positionY = y;
+		this.color = color;
+	}
+	
+	// 手のひら？を描画する
+	protected void render(GL2 gl2) {
+		gl2.glTranslatef(positionX, positionY, 0f);
+		
+		gl2.glPushMatrix();
+		gl2.glScalef(size, size, 1f);
+		gl2.glColor3fv(color, 0);
+		gl2.glBegin(GL2.GL_LINE_LOOP);
+		for (int i = 0; i < palmVertex.length; i++) {
+			gl2.glVertex3fv(palmVertex[i], 0);
+		}
+		gl2.glEnd();
+		
+		gl2.glPopMatrix();
+	}
+}
+</code></pre>
+
+<pre  class="source"><code>
+package demos.fingers;
+
+import com.jogamp.opengl.GL2;
+
+public class Finger { 
+	private static final float[][] fingerVertex = {{-1f, 0f}, {+1f, 0f}, {+1f, 1f}, {-1f, 1f}};
+	private final float positionX;
+	private final float positionY;
+	private final float length;
+	private float rotationAngle;
+	private final float[] color;
+
+	public Finger(Finger parent, float length, float rotationAngle, float[] color) {
+		this.positionX = parent.getJointX();
+		this.positionY = parent.getJointY();
+		this.length = length;
+		this.rotationAngle = rotationAngle;
+		this.color = color;
+	}
+
+	public Finger(float x, float y, float length, float rotationAngle, float[] color) {
+		this.positionX = x;
+		this.positionY = y;
+		this.length = length;
+		this.rotationAngle = rotationAngle;
+		this.color = color;
+	}
+	
+	float getJointY() {
+		return length;
+	}
+	
+	float getJointX() {
+		return 0;
+	}
+
+	public void updateRotation(float angle) {
+		this.rotationAngle += angle;
+	}
+	
+	// 指を描画する
+	protected void render(GL2 gl2) {
+		gl2.glTranslatef(positionX, positionY, 0f);
+		gl2.glRotatef(rotationAngle, 0f, 0f, 1f);
+	
+		gl2.glPushMatrix();
+		gl2.glScalef(1f, length, 1f);
+		gl2.glColor3fv(color, 0);
+		gl2.glBegin(GL2.GL_LINE_LOOP);
+		for (int i = 0; i < fingerVertex.length; i++) {
+			gl2.glVertex3fv(fingerVertex[i], 0);
+		}
+		gl2.glEnd();
+	
+		gl2.glPopMatrix();
+	}
+}
+</code></pre>
+<p>FingersSampleNewt.javaを実行すると、以下のようなウィンドウになります。指が離れてしまっていますね。何が起きたのでしょう？<br><img
+ alt=""
+ src="FingersSample1.png"
+ height="505"
+ width="464"><br>
+FingersSampleNewt.javaのdisplay()メソッドを以下のように直しましょう。</p>
+<pre  class="source"><code>@Override
+public void display(GLAutoDrawable drawable) {
+	//(省略)
+	//指を描く
+	//<em>for (int i = 0; i < FINGERS_COUNT; i++) { //削除
+		// fingers[i].render(gl2); //削除
+	//} //削除
+	
+	//ここから追加
+	gl2.glPushMatrix(); //(1)
+	fingers[0].render(gl2);
+	fingers[1].render(gl2);
+	fingers[2].render(gl2);
+	gl2.glPopMatrix(); //(2)
+	
+	gl2.glPushMatrix(); //(3)
+	fingers[3].render(gl2);
+	fingers[4].render(gl2);
+	fingers[5].render(gl2);
+	gl2.glPopMatrix(); //(4)
+	
+	gl2.glPushMatrix(); //(5)
+	fingers[6].render(gl2);
+	fingers[7].render(gl2);
+	fingers[8].render(gl2);
+	gl2.glPopMatrix(); //(6)
+	
+	gl2.glPushMatrix(); //(7)
+	fingers[9].render(gl2);
+	fingers[10].render(gl2);
+	fingers[11].render(gl2);
+	gl2.glPopMatrix(); //(8)
+	
+	gl2.glPushMatrix(); //(9)
+	fingers[12].render(gl2);
+	fingers[13].render(gl2);
+	fingers[14].render(gl2);
+	gl2.glPopMatrix(); //(10)</em>
+	//ここまでを追加
+}
+</code></pre>
+<p>これを実行すると次のようなウィンドウになります。これでも手のひらのつもりです。<br><img  alt=""  src="FingersSample2.png"
+ height="614"
+ width="614"></p>
+<dl><dt><code><a  class="label"  id="SglScalef">glScalef(float x、float y、float z)</a></code></dt><dd>変換行列にスケーリング係数を乗じます。引数はいずれもfloat型で、三つの引数x、y、zには現在のスケールに対する相対的なスケール係数を指定します。x、y、z軸それぞれ独立して係数を指定します。引数がdouble型ならglScaled()を使います。</dd></dl>
+
+<p>ウィンドウ上でマウスを左右にドラッグしてみてください。いちばん左の指（小指のつもりです）の角度が根元で変わります。<br>シフトキーを押しながらドラッグすると、小指の第二関節(指先から２番目）の角度が変わり、コントロールキーを押しながらだと第一関節（指先に一番近い）の角度が変わります。また、１から５の数字を押すと、ドラッグ操作の対象が、１から順に小指、薬指、中指、人差し指、親指に切り替わります。<br>上の修正を行う前は、小指から順に図形を描いていたので、小指は正常に描かれていましたが、薬指から後はglTranslatef()による変換行列への変更が蓄積され、おかしな位置に描画されていたのでした。<br>これを防ぐために、<code>(1)(3)(5)(7)(9)のplPushMatrix()</code>で、それまでの<code>glTranslatef()、glRotatef()、glScalef()</code>（これらを総称してtranformと呼ぶことがあります）が適用された変換行列を待避(push)しておき、<code>(2)(4)(6)(8)(10)のglPopMatrix()</code>で復元(pop)するようにしたため、薬指から後も正常に描かれるようになったのです。</p>
+上の例では、まず手のひらを描き、小指の根元から指先まで順に変換行列をtransformしながら描いていきますが、次に薬指を描くときに使う変換行列は小指の根元を描くときに使ったのと同じで構いません。そこで、小指を描く前に待避(push)しておいて、小指の描画が終わったら復元(pop)して再利用するようにします。中指以降も同様です。
+
+<p>なお、<code>glPushMatrix()とglPopMatrix()</code>の操作は、これを実行する前に<code>glMatrixMode(GL_MODELVIEW)</code>を実行していた場合、ModelView行列が対象となり、<code>glMatrixMode(GL_PROJECTION)</code>を実行していた場合、Projection行列が対象となります。<br>
+<code>glMatrixMode()</code>を一度も実行しないと、GL_MODELVIEWが指定されていることになります。<br>
+glMatrixMode()に指定できるパラメータには､GL_MODELVIEW、GL_PROJECTION以外に、GL_TEXTUREがありますが、これらについては割愛します。</p>
+<p>push、popの操作で使われるデータ構造はスタック、あるいはLIFO(先入れ後出し)と呼ばれています。<a  href="http://akita-nct.jp/yamamoto/lecture/2005/2E/test_4/html/node2.html">こちらの解説</a>がわかりやすいと思います。<br>
+スタックのサイズ、つまり、glPushMatrix()できる回数には、制限があります。OpenGLの仕様では、GL_MODELVIEWは32、GL_PROJECTIONは２が必須となっていますが、OpenGL実装によってはこれ以上の操作が許されており、以下のコードで問い合わせることができます。</p>
+<pre  class="source"><code><em>int[] maxStackSize = new int[1];
+gl.glGetIntegerv(GL2.GL_MODELVIEW_STACK_DEPTH, maxStackSize, 0);</em>//GL_PROJECTION_STACK_DEPTHあるいはGL_TEXTURE_STACK_DEPTH
+System.out.println(maxStackSize[0]);</code></pre>
+<p>Pushの操作を、許容された回数以上に行うと、その操作は無視され、エラーとなります。Popの操作についても、Pushの操作ときちんと対応している必要があり、Pushした回数を超えるとエラーとなります。OpenGLのエラーについては<a
+ href="#C13">13章</a>で説明します。<br>
+既出のglLoadIdentity()の場合、変換行列を初期化してしまいます。使い分ける基準としては、それまでに行った変換行列への変更を無効化しても構わない場合はこれを使い、そうではない場合pushしておいたのをpopして使うことになります。<br>同様の操作としては、glPushAttributes()とglPopAttributes()の組み合わせがありますが、ここでは詳細な説明は割愛します。</p>
+
+<h2><a  class="label"  id="C11">11.テクスチャ</a></h2>
+<p>以下の内容のファイルをTextureSample.javaという名前で作ります。</p>
+<pre  class="source"><code>package demos.texture;
+
+import java.io.IOException;
+import java.io.InputStream;
+import com.jogamp.opengl.DebugGL2;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLException;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.KeyAdapter;
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.Animator;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureIO;
+
+public class TextureSample implements GLEventListener {
+	private static final String IMAGE_FILE = "nehe.png"; //(1)
+	private final Animator animator;
+	private Texture texture; //(2)
+	
+	public static void main(String[] args) {
+		new TextureSample();
+	}
+	
+	public TextureSample() {
+		GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+		GLWindow glWindow = GLWindow.create(caps);
+		
+		glWindow.setTitle("Texture sample (Newt)");
+		glWindow.setSize(500, 500);
+		glWindow.addGLEventListener(this);
+		
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				quit();
+			}
+		});
+		
+		glWindow.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent key) {
+				switch (key.getKeyChar()) {
+					case KeyEvent.VK_ESCAPE:
+					quit();
+					break;
+					
+					case 'q':
+					quit();
+					break;
+					default:
+					break;
+				}
+			}
+		});
+		
+		glWindow.setVisible(true);
+		animator = new Animator(glWindow);
+		animator.start();
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		final GL2 gl2 = drawable.getGL().getGL2();
+		drawable.setGL(new DebugGL2(gl2));
+		gl2.glClearColor(1f, 1f, 1f, 1f);
+		
+		try {
+			InputStream resourceStream = this.getClass().getResourceAsStream(IMAGE_FILE);　　 //(3)
+			texture = TextureIO.newTexture(resourceStream, false, TextureIO.PNG); //(4)
+		} catch (GLException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) { }
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		final GL2 gl2 = drawable.getGL().getGL2();
+		gl2.glClear(GL2.GL_COLOR_BUFFER_BIT);
+		gl2.glLoadIdentity();
+		gl2.glScalef(0.9f, 0.9f, 0.9f);
+		
+		texture.enable(gl2); //(5)
+		
+		gl2.glBegin(GL2.GL_QUADS);
+		gl2.glTexCoord2f(0.0f, 0.0f); //(6)
+		gl2.glVertex2f(-1.0f, -1.0f);
+		gl2.glTexCoord2f(1.0f, 0.0f);
+		gl2.glVertex2f(1.0f, -1.0f);
+		gl2.glTexCoord2f(1.0f, 1.0f);
+		gl2.glVertex2f(1.0f, 1.0f);
+		gl2.glTexCoord2f(0.0f, 1.0f);
+		gl2.glVertex2f(-1.0f, 1.0f);
+		gl2.glEnd();
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(texture != null) {
+			final GL2 gl2 = drawable.getGL().getGL2();
+			texture.destroy(gl2); //(7)
+			if(animator != null) animator.stop();
+		}
+	}
+	
+	private void quit() {
+		animator.stop();
+		System.exit(0);
+	}
+}
+</code></pre>
+<p>そして以下の画像をTextureSample.javaと同じフォルダーに"nehe.png"というファイル名で格納しておきます。<br>
+<img  src="nehe.png"  alt="nehe image"  height="256"  width="256"><br>
+これを忘れたり、ファイル名が違っていたり、誤って別のフォルダーに置くと以下のような例外が表示されます。サンプルプログラムの(4)のところで、画像ファイルが見つからないためです。</p>
+<pre  class="source"><code>java.io.IOException: Stream was null
+at com.jogamp.opengl.util.texture.TextureIO.newTextureDataImpl(TextureIO.java:834)
+at com.jogamp.opengl.util.texture.TextureIO.newTextureData(TextureIO.java:246)
+at com.jogamp.opengl.util.texture.TextureIO.newTexture(TextureIO.java:506)
+at demos.texture.TextureSample.init(TextureSample.java:77)
+(以下省略)
+</code></pre>
+<p>これを実行すると、以下のようなウィンドウが表示されます。<br><img  alt=""  src="TextureSample.png"  height="334"
+ width="324"></p>
+<p>(1)で、上記の画像ファイル名を指定し、(2)で<code>com.jogamp.opengl.util.texture.Texture</code>クラスのインスタンス変数textureを宣言しています。<br>
+(3)で、(4)の引数とするInputStreamクラスの変数resourceStreamを、(1)のファイルを引数として作成しています。<br>
+(4)で、(2)で宣言したtexture変数に画像ファイルから読み込んだ内容をセットしています。これで、OpenGLで使うテクスチャの準備ができました。</p>
+<dl><dt><code><a  class="label"  id="SnewTexture">com.jogamp.opengl.util.texture.TextureIO.newTexture(java.io.InputStream stream, boolan mipmap, String imageType)</a></code></dt><dd>指定されたstreamからOpenGLのテクスチャを用意します。mipmap引数はミップマップと呼ばれる、スケールの異なる複数のテクスチャを用意するか否かを指示します。画像ファイルフォーマットによってはミップマップをサポートしていて、ファイル内に格納されている場合もあり、このような場合にはそれが使われ、なければJOGL内部で自動生成します。ミップマップは、LOD(Level Of Detals)と呼ばれる、対象の物体がスクリーン内でどの程度の大きさに見えるかに応じてテクスチャを切り替える際に使います。(スクリーン内で小さくしか見えない物体に対し、詳細なテクスチャを適用するのはメモリの無駄遣いなので、小さめのテクスチャが使われます)</dd><dd>最後のimageTypeは、画像フォーマットを指定する名前を与えます。nullを指定すると自動検出を試みます。サポートされている画像フォーマットは、JPEG,PNG,GIF,TIFFなどで、それぞれ上記のimageTypeに<code>TextureIO.JPG,TextureIO.PNG,TextureIO.GIF,TextureIO.TIFFを指定します。</code></dd></dl>
+<p>なお、(3)(4)はinit()内で実行していますが、GLインスタンスを必要としないので、コンストラクターなど、他で実行しても構いません。</p>
+<p>(3)は以下のようにすると、Javaのクラスファイルとは別のフォルダーに格納しておくことができます。状況に応じて使い分けるとよいでしょう。</p>
+<pre  class="source"><code>String someFolder = "どこかのフォルダー";
+File file = new File(someFolder, IMAGE_FILE);
+InputStream resourceStream = new FileInputStream(file);
+</code></pre>
+<p>(5)から(7)で、(2)のtextureオブジェクトを使っています。(5)でテクスチャーを使うことを指定します。(6)以降でテクスチャ座標とポリゴン座標の対応を指定しています。<br>ウィンドウを閉じたときにdispose()が呼ばれるので、(7)でテクスチャーオブジェクトを廃棄しています。</p>
+<p>画像ファイルの原点は、通常画像の左上となっていますが、テクスチャ座標は画像の左下を原点としています。C言語などでは、テクスチャ座標の上下を反転して扱う必要がありましたが、TextureIOを使えば内部で自動的に反転されるため、意識する必要はありません。</p>
+<p>テクスチャ座標は、元の画像ファイルの縦・横のサイズとは無関係に、左下の(0,0)から右上の(1,1)の範囲にスケールされます。</p>
+<p>サンプルプログラムでは、テクスチャ座標とポリゴン座標を以下のように対応させています。<a  href="#S8.3">8.3節</a>で、ポリゴンの頂点をたどる順が左回り(反時計回り)を表面とすると書きましたが、テクスチャ座標も同様に反時計回りとなっています。</p>
+<table  summary="テクスチャ座標とポリゴン座標の対応"  border="1"  cellpadding="2"  cellspacing="2"
+ width="100"><tbody>
+	  </tbody><thead><tr><th>位置</th><th>テクスチャ座標</th><th>ポリゴン座標</th></tr></thead>
+	  <tbody><tr><td  valign="top">①</td><td  valign="top">(0,0)</td><td  valign="top">(-1,+1,0)</td></tr>
+	      <tr><td  valign="top">②</td><td  valign="top">(1,0)</td><td  valign="top">(+1,+1,0)</td></tr>
+		  <tr><td  valign="top">③</td><td  valign="top">(1,1)</td><td  valign="top">(+1,-1,0)</td></tr>
+		  <tr><td  valign="top">④</td><td  valign="top">(0,1)</td><td  valign="top">(-1,-1,0)</td></tr></tbody></table>
+<img  alt="テクスチャ座標の対応"  src="texture-coord-flip.png"  height="300"  width="504"><br>
+
+
+<h2><a  class="label"  id="C12">12.GLUTに定義済みの図形</a></h2>
+
+<p>JOGLにはGLUTの機能が移植されています。GLUTで定義されている図形を描画するサンプルプログラムを以下に示します。</p>
+<pre  class="source"><code>
+package demos.glut;
+
+import static com.jogamp.opengl.GL.*;
+import static com.jogamp.opengl.fixedfunc.GLLightingFunc.*;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.newt.event.KeyAdapter;
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.MouseAdapter;
+import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.newt.event.WindowAdapter;
+import com.jogamp.newt.event.WindowEvent;
+import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.util.Animator;
+import com.jogamp.opengl.util.gl2.GLUT;
+
+public class GlutSampleNewt implements GLEventListener {
+	private final Animator animator;
+	private final GLUT glut;
+	
+	private float viewScale = 0.02f;
+	
+	private final float[] white0 = {0.5f, 0.5f, 0.5f};
+	private final float[] white1 = {1f, 1f, 1f};
+	private final float[] red = {1f, 0f, 0f};
+	private final float[] green = {0f, 1f, 0f};
+	private final float[] blue = {0f, 0f, 1f};
+	private final float[] yellow = {1f, 1f, 0f};
+	private final float[] magenta = {1f, 0f, 1f};
+	private final float[] cyan = {0f, 1f, 1f};;
+	
+	private final float[] light0pos = {-10f, 30.0f, 5.0f, 1.0f};
+	private final float[] light1pos = {-10f, 30.0f, 5.0f, 1.0f};
+	
+	public static void main(String[] args) {
+		new GlutSampleNewt();
+	}
+	
+	public GlutSampleNewt() {
+		GLProfile prof = GLProfile.get(GLProfile.GL2);
+		glut = new GLUT();
+		GLCapabilities caps = new GLCapabilities(prof);
+		GLWindow glWindow = GLWindow.create(caps);
+		glWindow.setTitle("GLUT demo (Newt)");
+		glWindow.setSize(500, 500);
+		glWindow.addGLEventListener(this);
+		
+		glWindow.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowDestroyed(WindowEvent evt) {
+				quit();
+			}
+		});
+		
+		glWindow.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseWheelMoved(MouseEvent e) {
+				float[] rot = e.getRotation();
+				viewScale *= (rot[1] > 0 ? 1.005f : 0.995f);
+				System.out.println(viewScale);
+			}
+		});
+		
+		glWindow.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent key) {
+				switch (key.getKeyChar()) {
+					case KeyEvent.VK_ESCAPE:
+					quit();
+					break;
+					
+					case 'q':
+					quit();
+					break;
+					default:
+					break;
+				}
+			}
+		});
+		
+		glWindow.setVisible(true);
+		animator = new Animator(glWindow);
+		animator.start();
+	}
+	
+	@Override
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl2 = drawable.getGL().getGL2();
+		gl2.glClearColor(1, 1, 1, 1);
+		gl2.glClearDepth(1.0f);
+		gl2.glEnable(GL_DEPTH_TEST);
+		gl2.glEnable(GL_CULL_FACE);
+		gl2.glCullFace(GL_FRONT);
+		gl2.glEnable(GL_LIGHTING);
+		gl2.glEnable(GL_LIGHT0);
+		gl2.glLightfv(GL_LIGHT0, GL_DIFFUSE, white0, 0);
+		gl2.glLightfv(GL_LIGHT0, GL_POSITION, light0pos, 0);
+		gl2.glEnable(GL_LIGHT1);
+		gl2.glLightfv(GL_LIGHT1, GL_SPECULAR, white0, 0);
+		gl2.glLightfv(GL_LIGHT1, GL_POSITION, light1pos, 0);
+		gl2.glEnable(GL_LIGHT2);
+		gl2.glLightfv(GL_LIGHT2, GL_AMBIENT, white0, 0);
+	}
+	
+	@Override
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {}
+	
+	@Override
+	public void display(GLAutoDrawable drawable) {
+		GL2 gl2 = drawable.getGL().getGL2();
+		gl2.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		gl2.glLoadIdentity();
+		gl2.glScalef(viewScale, viewScale, viewScale);
+		
+		gl2.glPushMatrix();
+		gl2.glTranslatef(-30f, -20, 0);
+		gl2.glRotatef(30f, 0f, 1f, 0f);
+		gl2.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, green, 0);
+		glut.glutSolidSphere(10, 30, 30); //(1)球
+		gl2.glPopMatrix();
+		
+		gl2.glPushMatrix();
+		gl2.glTranslatef(0f, -20, 0);
+		gl2.glRotatef(30f, 1f, 1f, 0f);
+		gl2.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, blue, 0);
+		glut.glutSolidTeapot(10); //(2)ティーポット
+		gl2.glPopMatrix();
+		
+		gl2.glPushMatrix();
+		gl2.glTranslatef(30f, -20, 0);
+		gl2.glRotatef(30f, 0f, 1f, 0f);
+		gl2.glRotatef(30f, 0f, 0f, 1f);
+		gl2.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, yellow, 0);
+		glut.glutSolidCube(10); //(3)立方体
+		gl2.glPopMatrix();
+		
+		gl2.glPushMatrix();
+		gl2.glTranslatef(-40f, 20, 0);
+		gl2.glRotatef(30f, 0f, 1f, 0f);
+		gl2.glRotatef(30f, 1f, 0f, 0f);
+		gl2.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, cyan, 0);
+		glut.glutSolidCylinder(10, 20, 20, 10); //(4)円筒
+		gl2.glPopMatrix();
+		
+		gl2.glPushMatrix();
+		gl2.glTranslatef(0f, 20, 0);
+		gl2.glRotatef(30f, 0f, 1f, 0f);
+		gl2.glRotatef(30f, 0f, 0f, 1f);
+		gl2.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, magenta, 0);
+		glut.glutSolidTorus(3, 10, 15, 25); //(5)トーラス
+		gl2.glPopMatrix();
+		
+		gl2.glPushMatrix();
+		gl2.glTranslatef(30f, 20, 0);
+		gl2.glRotatef(30f, 0f, 1f, 0f);
+		gl2.glRotatef(30f, 0f, 0f, 1f);
+		gl2.glScalef(10f, 10f, 10f);
+		gl2.glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, red, 0);
+		glut.glutSolidOctahedron(); //(6)正八面体
+		gl2.glPopMatrix();
+	}
+	
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		if(animator != null) animator.stop();
+	}
+	
+	private void quit() {
+		animator.stop();
+		System.exit(0);
+	}
+}
+</code></pre>
+<p>これを実行すると次のようなウィンドウが表示されます。左上から順にサンプルプログラムの(1)から(6)により描かれています。<br>青いのは<a  href="https://ja.wikipedia.org/wiki/Utah_teapot">UtahTeapot</a>と呼ばれていて、コンピューターグラフィックスの黎明期から今までずっと使われている、由緒正しいものなのだそうです。<br><img
+ alt="GLUT図形サンプル"
+ src="GlutSampleNewt.png"
+ height="636"
+ width="614"></p>
+
+<h2><a  class="label"  id="C13">13.OpenGLのプロファイル</a></h2>
+
+<p>どれでもいいので、サンプルプログラムに以下のように追記して実行してみてください。</p><pre  class="source"><code>@Override
+public void init(GLAutoDrawable drawable) {
+	//省略
+	showGLInfo(drawable);
+}
+private static void showGLInfo(GLAutoDrawable drawable) {
+	System.err.println("利用可能なプロファイルのリスト");
+	for(String prof : GLProfile.GL_PROFILE_LIST_ALL) {
+		System.err.println(prof);
+	}
+	System.err.println();
+	System.err.println("選択されたGLCapabilities: " + drawable.getChosenGLCapabilities());
+	GL gl = drawable.getGL();
+	System.err.println("INIT GL: " + gl.getClass().getName());
+	System.err.println("GL_VENDOR: " + gl.glGetString(GL.GL_VENDOR));
+	System.err.println("GL_RENDERER: " + gl.glGetString(GL.GL_RENDERER));
+	System.err.println("GL_VERSION: " + gl.glGetString(GL.GL_VERSION));
+}
+</code></pre>
+<p>すると、以下のようなメッセージがコンソールに表示されると思います。<br>
+以下は、Mac Book Air(2012 mid model、OSはMarvericks)での実行結果です。</p>
+<pre  class="source"><code>利用可能なプロファイルのリスト
+GL4bc
+GL3bc
+GL2
+GL4
+GL3
+GLES3
+GL4ES3
+GL2GL3
+GLES2
+GL2ES2
+GLES1
+GL2ES1
+選択されたGLCapabilities: GLCaps[rgba 8/8/8/0, opaque, accum-rgba 0/0/0/0, dp/st/ms 16/0/0, dbl, mono , hw, GLProfile[GL4/GL4.hw], offscr[fbo]]
+INIT GL: jogamp.opengl.gl4.GL4bcImpl
+GL_VENDOR: Intel Inc.
+GL_RENDERER: Intel HD Graphics 4000 OpenGL Engine
+GL_VERSION: 4.1 INTEL-8.28.33
+</code></pre>
+<p>OpenGLは、歴史的経緯により、次々と機能が拡張されてきました。OpenGLの規格を制定しているKhronos Groupでは、最近のバージョン3.1を策定したときに、過去との互換性を切り捨てて、固定機能パイプラインへのサポートを廃止し、GLSLなどの新しい機能だけを使えるようにしました。この方針は、開発者の猛反対にあったため、過去のバージョンとの互換性を維持するために、プロファイルという概念を導入し、これによって古い機能を指定して使えるようにしました。JOGLにもこの方針が反映されており、GLProfileクラスとして定義されています。<br>この文書では、一貫して、</p>
+<pre  class="source"><code>GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+</code></pre>
+<p>としていましたが、これはOpenGL2.0を使うように設定していたのです。ここには、以下のように</p>
+<pre  class="source"><code>GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL3));
+</code></pre>
+<pre  class="source"><code>GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL4));
+</code></pre>
+<pre  class="source"><code>GLCapabilities caps = new GLCapabilities(GLProfile.getDefault());
+</code></pre>
+<p>などを指定できます。上記のリストは、プロファイルとして指定できる値を列挙していたのです。<br>ここで注意すべき点が一つあります。最後のサンプルプログラム(FingersSampleNewt.java)の</p>
+<pre  class="source"><code>GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+</code></pre>
+<p>の"GL2"を"GL3"に変えてみてください。コンパイルは出来ますが、実行すると以下のようなメッセージが表示され正常に動きません。</p>
+<pre  class="source"><code>Exception in thread "main" java.lang.RuntimeException: com.jogamp.opengl.GLException: Caught GLException: Not a GL2 implementation on thread
+main-Display-.macosx_nil-1-EDT-1
+</code></pre>
+<p>これを修正するためには、init(),reshape(),display(),dispose()の各メソッド内で</p>
+<pre  class="source"><code>GL2 gl2 = drawable.getGL().getGL2();
+</code></pre>
+<p>としているところを、</p>
+<pre  class="source"><code>GL3 gl3 = drawable.getGL().getGL3();
+</code></pre>
+<p>のように変える必要があります。しかし、これだと以下のメソッドがコンパイル・エラーとなります。GL3では、これらのメソッドが前述の事情により廃止され、サポートされていないためです。対策として、固定機能パイプラインを使わず、GLSLというシェーダー言語と組み合わせてプログラムすることになります。GLSLについては、この文書では説明しません。</p>
+<pre  class="source"><code>gl3.glLoadIdentity();
+gl3.glScalef(viewScale, viewScale, viewScale);
+gl3.glTranslatef(positionX, positionY, 0f);
+gl3.glRotatef(rotationAngle, 0f, 0f, 1f);
+gl3.glPushMatrix();
+gl3.glColor3fv(color, 0);
+gl3.glBegin(gl3.GL_LINE_LOOP);
+gl3.glVertex3fv(fingerVertex[i], 0);
+gl3.glEnd();
+gl3.glPopMatrix();
+</code></pre>
+<p>なお、これ以外にも以下を指定できます。</p>
+<pre  class="source"><code>GLCapabilities caps = new GLCapabilities(GLProfile.getMaxFixedFunc(true));</code></pre>
+<p>GLProfile.getMaxFixedFunction()、GLProfile.getDefault()を指定した場合にどのバージョンが使われるかはハードウェアやOSに依存し、上記のようにエラーとなる可能性があるため、バージョンを指定する方が望ましいでしょう。</p>
+
+<h2><a  class="label"  id="C14">14.デバッグ</a></h2>
+
+<p>(1)エラーの原因を表示する。以下により、OpenGLへの呼び出しの後に毎回エラーが起きていないかをチェックし、何かあったらエラーを標準出力に出すようになります。</p>
+<pre  class="source"><code>
+@Override<br>public void init(GLAutoDrawable drawable) {
+	GL2 gl2 = drawable.getGL().getGL2();
+	drawable.setGL(new DebugGL2(gl2));
+	//以降省略
+}
+</code></pre>
+<p>(2)OpenGLへの呼び出しをトレースする。以下により、OpenGL呼び出しの度に、呼び出されたOpenGLのメソッドが、パラメータと共に、指定したファイルに出力されます。</p>
+<pre  class="source"><code>
+private final GLPrintStream out;
+//コンストラクタ
+public SomeClass {
+	try {
+		out = new GLPrintStream("gltrace.txt");
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+}
+@Override
+public void init(GLAutoDrawable drawable) {
+	GL2 gl2 = drawable.getGL().getGL2();
+	drawable.setGL(newTraceGL2(gl2, out));
+	//以降省略
+}
+</code></pre>
+<p>(3)OpenGLに慣れていないうちは、プログラムを実行してもウィンドウ内に何も見えないことがあったりします。以下に主な原因と対策を示します。</p>
+<table  style="width: 1183px; height: 435px;"  border="1">
+      <tbody>
+        <tr>
+          <td  style="width: 535.633px;">原因</td>
+          <td  style="width: 739.367px;">対策</td>
+        </tr>
+        <tr>
+          <td>頂点の位置が異常なため、意図したポリゴンになっていない。ポリゴンの各点が重なっていたり、三角形のつもりが 細い線になっている。</td>
+          <td>地道に各頂点の座標を調べる。</td>
+        </tr>
+        <tr>
+          <td>頂点の順番がおかしいため、物体の面の表裏が逆になり、カリングによって見えなくなっている。</td>
+          <td>glEnable(CULL_FACE)を止めてみる。</td>
+        </tr>
+        <tr>
+          <td>カメラの向きと物体のある位置が一致していない。<br>
+            意外とありがちなのが、カメラが物体の中に潜り込んでいるケース。<br>
+            平面上に描いた図形を真横から見ているため、線しか見えない場合もある。</td>
+          <td>カメラの位置を変えてみる。<br>
+            視錐台を大きくしてみる。<br>
+            物体の全ての頂点がカメラの視野の中に納まるか、全ての頂点の座標と視錐台の包含関係をチェックする。<br>
+            </td>
+        </tr>
+        <tr>
+          <td>glProjectionMatrix()によるMODELVIEWとPROJECTIONを忘れている。あるいは、変換行列に異常な値を設定している。</td>
+          <td>これらを正しく設定する。<br>
+            </td>
+        </tr>
+        <tr>
+          <td>glScalef()に渡す変数の初期化を忘れていて、０になっている。</td>
+          <td>初期化を追加。</td>
+        </tr>
+        <tr>
+          <td>スケールが大きすぎる、あるいは小さすぎる。</td>
+          <td>スケールを変えてみる。あるいは、スケールがマウスドラッグによって変わるように実装し、ドラッグしてみる。<a  href="#S5.6">(5.6 節を参照)</a></td>
+        </tr>
+        <tr>
+          <td>物体の色や、照明、材質が正しく設定されていない。<br>あるいは、背景色と同じ色になっている。</td>
+          <td>これらを変えてみる。</td>
+        </tr>
+      </tbody>
+    </table>
+<h2><a  class="label"  id="C15">15.サンプルコード</a></h2>
+<p>この文書内で使われているJavaのソースコードは、<a href="https://github.com/toruwest/jogl-tutorial">こちら(GitHub)</a>からダウンロードできます。</p><p>JOGLのサンプルは、以下が参考になります。</p>
+<ul>
+<li><a  href="http://jogamp.org/deployment/jogamp-current/archive/Sources/jogl-demos-v2.3.2.tar.xz">Jogamp.orgに用意されているサンプルコード</a>  (バイナリファイルへのリンク)</li>
+<li><a  href="https://jogamp.org/wiki/index.php/Jogl_Tutorial">Jogamp.orgの"Jogl Tutorial"</a></li>
+<li><a href="https://www3.ntu.edu.sg/home/ehchua/programming/opengl/JOGL2.0.html">Yet Another Tutorial on JOGL 2.1 Including Nehe JOGL Port</a> これは冒頭で説明したパッケージ名の修正が必要です。</li>
+<li><a  href="http://jogamp.org/deployment/jogamp-current/archive/Sources/">JOGLのソースコード</a>のアーカイブ(jogl-v2.*.*.tar.xz)の、src/testの下に、JUnitによるテストコードがあります。</li>
+</ul>
+<h2><a  class="label"  id="Reference">16. リファレンス</a></h2>
+<ul>
+<li><a  href="http://jogamp.org/jogl/www/">Jogamp.org</a>ここの右上にフォーラムへのリンクがあり、英語での質疑応答ができます。</li>
+<li><a  href="https://jogamp.org/deployment/jogamp-current/javadoc/jogl/">Jogamp.orgにあるJOGLのJavaDoc</a></li>
+<li><a  href="http://jogamp.org/deployment/jogamp-current/archive/">JOGLのJavaDoc</a>のアーカイブ(jogl-javadoc.7z)</li>
+<li><a  href="http://jogamp.org/deployment/jogamp-current/archive/Sources/">JOGLのソースコード</a>のアーカイブ(jogl-v2.*.*.tar.xz)　同じものが<a
+ href="http://jogamp.org/deployment/jogamp-current/archive/">ここからダウンロード</a>したアーカイブにもjocl-java-src.zipというファイル名で含まれています。</li>
+<li><a  href="http://stackoverflow.com">stackoverflow.com</a>にはJOGLというタグでの質疑応答があります。JOGLの開発者の一人のgouessejという方がアクティブに回答されています。</li>
+<li>書籍「Javaによる3DCG入門」著作:山口 泰、出版：朝倉書店、出版：2015年5月</li>
+</ul>
+<h2><a  class="label"  id="license">17.ライセンス</a></h2>
+<p>この文書および文書内のソースコードはできるだけ正確で、誤り・瑕疵がないよう努力していますが、無保証であり、これらが含まれている可能性があります。筆者は、この文書を使用した結果についてはいかなる形でも責任を負いません。また、誤り・瑕疵については、可能な限り修正したいとは考えていますが、修正する義務を負いません。
+再配布・改変する場合には、必ずこのライセンス条項を残してください。</p>
+<footer>Copiright<code> © </code>2015, toruwest. All rights reserved.</footer>
+</body></html>
