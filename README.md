@@ -9,4 +9,6 @@ JOGLによるOpenGL入門.pdfは、index.htmlをそのままPDF化したもの�
 
 license.txtに従い自由に再配布・改変してくださっても構いません。
 
+キーワード：Java JOGL OpenGL 3DCG 入門 チュートリアル サンプルコード
+
 Copiright © 2015, toruwest. All rights reserved.
