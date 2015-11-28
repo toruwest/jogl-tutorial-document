@@ -122,16 +122,16 @@
             <h2><a  class="label"  id="C2">2.JOGLのインストール</a></h2>
             <p>(1)Mavenを使う方法</p>
             <p>&nbsp;JOGLは<a  href="http://mvnrepository.com/artifact/org.jogamp.jogl/jogl-all-main">Maven
-                セントラル・リポジトリ</a>に登録されているので、以下の内容("*"は具体的な数字で置き換えます)をpom.xmlに書いておけ
+                セントラル・リポジトリ</a>に登録されているので、以下の内容("*"は、セントラル・リポジトリにある具体的な数字で置き換えます)をpom.xmlに書いておけ
               ば、"mvn&nbsp;install"によりダウンロードされます。<br>
               JavaDocをダウンロードしたい場合、"mvn dependency:resolve
               -Dclassifier=javadoc"、Javaソースをダウンロードしたい場合、"mvn dependency:resolve
               -Dclassifier=sources"とします。</p>
-            <pre  class="source"><code><dependency>
-    <groupid>org.jogamp.jogl</groupid>
-    <artifactid>jogl-all-main</artifactid>
-    <version>2.*.*</version>
-</dependency>
+            <pre class="source"><code>&lt;dependency&gt;
+		&lt;groupid&gt;org.jogamp.jogl&lt;/groupid&gt;
+		&lt;artifactid&gt;jogl-all-main&lt;/artifactid&gt;
+		&lt;version&gt;2.*.*&lt;/version&gt;
+&lt;/dependency&gt;
 </code></pre>
             <p>(2)コンパイル済みバイナリの入手</p>
             <p>JOGLのコンパイル済みのバイナリは<a  href="http://jogamp.org/">http://jogamp.org/</a>か
